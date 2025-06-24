@@ -5,7 +5,7 @@
 ## 一、前言
 
 ```
-本文意在对GoLang面试题进行归纳总结，也欢迎读者进行评论或者留言分享面试题，希望读者看
+本文意在对Golang面试题进行归纳总结，也欢迎读者进行评论或者留言分享面试题，希望读者看
 后能够具备“吊打面试官”的能力。本文中点到为止的知识点望读者可以根据关键词自行查漏补
 缺。
 本文档会⻓期进行维护更新，建议读者收藏防止迷路。还有就是：知识是温故知新的，常回头看
@@ -25,12 +25,12 @@
 ### 2. Go程序中的包是什么？
 
 包（pkg）是Go工作区中包含Go源文件或其他包的目录。源文件中的每个函数、变量和类型都存储在链接包中。每个Go源文件都属于一个包，该包在文件顶部使用以下命令声明：
-```
+```go
 1 package <packagename>
 ```
 #### 您可以使用以下方法导入和导出包以重用导出的函数或类型：
 
-```
+```go
 1 import <packagename>
 ```
 
@@ -40,7 +40,7 @@ Golang的标准包是fmt，其中包含格式化和打印功能，如Println()�
 
 Go支持显式类型转换以满足其严格的类型要求。
 
-```
+```go
 i := 55 //int
 j := 67.8 //float
 sum := i + int(j) //j is converted to int
@@ -52,12 +52,12 @@ sum := i + int(j) //j is converted to int
 
 要创建Goroutine，请go在函数声明之前添加关键字。
 
-```
+```go
 1 go func(x, y, z)
 ```
 您可以通过向Goroutine发送一个信号通道来停止它。Goroutines只能在被告知检查时响应信号，因此您需要在逻辑位置（例如for循环顶部）包含检查。
 
-```
+```go
 package main
 func main() {
     quit := make(chan bool)
@@ -128,7 +128,7 @@ new创建一个该类型的实例，并且返回指向该实例**的指针**。
 new函数是内建函数，函数定义：
 
 
-```
+```go
 1 func new(Type) *Type
 ```
 - 使用new函数来分配空间。
@@ -143,7 +143,7 @@ make的作用是为：slice、map、chan的初始化然后返回引用。
 
 make函数是内建函数，函数定义：
 
-```
+```go
 1 func make(Type, size IntegerType) Type
 ```
 make（T，args）函数的目的和new（T）不同，仅仅用于创建slice、map、channel而且返回类型是实例。
@@ -185,45 +185,33 @@ make（T，args）函数的目的和new（T）不同，仅仅用于创建slice�
 
     切片可以改变⻓度。切片是轻量级的数据结构，三个属性，指针，⻓度，容量，不需要指定大小切片是地址传递（引用传递）可以通过数组来初始化，也可以通过内置函数make（）来初始化，初始化的时候len=cap，然后进行扩容。
 
-格式修正到这里了
+### 17. Go语言当中值传递和地址传递（引用传递）如何运用？有什么区别？举例说明
 
-### 17. Go语言当中值传递和地址传递（引用传递）如何运用？有什么区别？举例
+- 值传递只会把参数的值复制一份放进对应的函数，两个变量的地址不同，不可相互修改。
 
-### 说明
-
-#### 值传递只会把参数的值复制一份放进对应的函数，两个变量的地址不同，不可相互修改。
-
-#### 地址传递（引用传递）会将变量本身传入对应的函数，在函数中可以对该变量进行值内容的修改。
+- 地址传递（引用传递）会将变量本身传入对应的函数，在函数中可以对该变量进行值内容的修改。
 
 ### 18. Go语言当中数组和切片在传递的时候的区别是什么？
 
-#### 数组是值传递。
+- 数组是值传递。
 
-#### 切片看上去像是引用传递，但其实是值传递。
+- 切片看上去像是引用传递，但其实是值传递。
 
 ### 19. Go语言是如何实现切片扩容的？
 
-```
+```go
 func main() {
-arr := make([]int, 0 )
-for i := 0 ; i < 2000 ; i++ {
-fmt.Println("len 为", len(arr), "cap 为", cap(arr))
-arr = append(arr, i)
+    arr := make([]int, 0 )
+    for i := 0 ; i < 2000 ; i++ {
+        fmt.Println("len 为", len(arr), "cap 为", cap(arr))
+        arr = append(arr, i)
+    }
 }
-}
-```
-```
 // 我们可以看下结果
 依次是 0 , 1 , 2 , 4 , 8 , 16 , 32 , 64 , 128 , 256 , 512 , 1024
 但到了 1024 之后，就变成了 1024 , 1280 , 1696 , 2304 每次都是扩容了四分之一左右。
 ```
-```
-1 2 3 4 5 6 7 8 9
-```
-```
-10
-11
-```
+
 ### 20. defer的执行顺序是什么？defer的作用和特点是什么？
 
 defer的作用是：
@@ -237,326 +225,209 @@ defer后的函数才会被执行，不论包含defer语句的函数是通过retu
 
 defer的常用场景：
 
-## ◦ defer语句经常被用于处理成对的操作，如打开、关闭、连接、断开连接、加锁、释放锁。
+- defer语句经常被用于处理成对的操作，如打开、关闭、连接、断开连接、加锁、释放锁。
 
-## ◦ 通过defer机制，不论函数逻辑多复杂，都能保证在任何执行路径下，资源被释放。
+- 通过defer机制，不论函数逻辑多复杂，都能保证在任何执行路径下，资源被释放。
 
-## ◦ 释放资源的defer应该直接跟在请求资源的语句后。
+- 释放资源的defer应该直接跟在请求资源的语句后。
 
-### 21. Go的d efer底层数据结构？
+### 21. Go的defer底层数据结构？
 
-每个defer语句都对应一个_defer实例，多个实例使用指针连接起来形成一个单链表，保存在
-gotoutine数据结构中，每次插入_defer实例，均插入到链表的头部，函数结束再一次从头部取
-出，从而形成后进先出的效果。
+每个defer语句都对应一个_defer实例，多个实例使用指针连接起来形成一个单链表，保存在gotoutine数据结构中，每次插入_defer实例，均插入到链表的头部，函数结束再一次从头部取出，从而形成后进先出的效果。
 
-### 22. GolangS lice的底层实现？
+### 22. Golang Slice的底层实现？
 
-#### 切片是基于数组实现的，它的底层是数组，它自己本身非常小，可以理解为对底层数组的抽象。因
+切片是基于数组实现的，它的底层是数组，它自己本身非常小，可以理解为对底层数组的抽象。因为基于数组实现，所以它的底层的内存是连续分配的，效率非常高，还可以通过索引获得数据。切片本身并不是动态数组或者数组指针。它内部实现的数据结构通过指针引用底层数组，设定相关属性将数据读写操作限定在指定的区域内。切片本身是一个只读对象，其工作机制类似数组指针的一种封装。
 
-#### 为基于数组实现，所以它的底层的内存是连续分配的，效率非常高，还可以通过索引获得数据。
+切片对象非常小，是因为它是只有3个字段的数据结构：
 
-#### 切片本身并不是动态数组或者数组指针。它内部实现的数据结构通过指针引用底层数组，设定相关
+- 指向底层数组的指针
+- 切片的⻓度
+- 切片的容量
 
-#### 属性将数据读写操作限定在指定的区域内。切片本身是一个只读对象，其工作机制类似数组指针的
-
-#### 一种封装。
-
-#### 切片对象非常小，是因为它是只有3个字段的数据结构：
-
-## ◦ 指向底层数组的指针
-
-## ◦ 切片的⻓度
-
-## ◦ 切片的容量
-
-### 23. GolangS lice的扩容机制，有什么注意点？
+### 23. Golang Slice的扩容机制，有什么注意点？
 
 Go中切片扩容的策略是这样的：
 
-## ◦ 首先判断，如果新申请容量大于2倍的旧容量，最终容量就是新申请的容量。
+- 首先判断，如果新申请容量大于2倍的旧容量，最终容量就是新申请的容量。
 
-## ◦ 否则判断，如果旧切片的⻓度小于1024，则最终容量就是旧容量的两倍。
+- 否则判断，如果旧切片的⻓度小于1024，则最终容量就是旧容量的两倍。
 
-## ◦ 否则判断，如果旧切片⻓度大于等于1024，则最终容量从旧容量开始循环增加原来的1/4，直
+- 否则判断，如果旧切片⻓度大于等于1024，则最终容量从旧容量开始循环增加原来的1/4，直到最终容量大于等于新申请的容量。
 
-#### 到最终容量大于等于新申请的容量。
+- 如果最终容量计算值溢出，则最终容量就是新申请容量。
 
-## ◦ 如果最终容量计算值溢出，则最终容量就是新申请容量。
-
-### 24. 扩容前后的S lice是否相同？
+### 24. 扩容前后的Slice是否相同？
 
 #### 情况一：
 
-#### 原数组还有容量可以扩容（实际容量没有填充完），这种情况下，扩容以后的数组还是指向原来的
-
-数组，对一个切片的操作可能影响多个指针指向相同地址的Slice。
+原数组还有容量可以扩容（实际容量没有填充完），这种情况下，扩容以后的数组还是指向原来的数组，对一个切片的操作可能影响多个指针指向相同地址的Slice。
 
 
 #### 情况二：
 
-原来数组的容量已经达到了最大值，再想扩容，Go默认会先开一片内存区域，把原来的值拷⻉过
-来，然后再执行append（）操作。这种情况丝毫不影响原数组。
-
-要复制一个Slice，最好使用Copy函数。
+原来数组的容量已经达到了最大值，再想扩容，Go默认会先开一片内存区域，把原来的值拷⻉过来，然后再执行append()操作。这种情况丝毫不影响原数组。要复制一个Slice，最好使用Copy函数。
 
 ### 25. Golang的参数传递、引用类型
 
-Go语言中所有的传参都是值传递（传值），都是一个副本，一个拷⻉。因为拷⻉的内容有时候是
-非引用类型（int、string、struct等这些），这样就在函数中就无法修改原内容数据；有的是引用
-类型（指针、map、slice、chan等这些），这样就可以修改原内容数据。
+Go语言中所有的传参都是值传递（传值），都是一个副本，一个拷⻉。因为拷⻉的内容有时候是非引用类型（int、string、struct等这些），这样就在函数中就无法修改原内容数据；有的是引用类型（指针、map、slice、chan等这些），这样就可以修改原内容数据。
 
-### 26. GolangM ap底层实现
+### 26. GolangMap底层实现
 
-Golang中map的底层实现是一个散列表，因此实现map的过程实际上就是实现散表的过程。在
-这个散列表中，主要出现的结构体有两个，一个叫hmap（aheaderforagomap），一个叫
-bmap（abucketforaGomap，通常叫其bucket）。
+Golang中map的底层实现是一个散列表，因此实现map的过程实际上就是实现散表的过程。在这个散列表中，主要出现的结构体有两个，一个叫hmap（aheaderforagomap），一个叫bmap（abucketforaGomap，通常叫其bucket）。
 
-用链表来解决冲突，出现冲突时，不是每一个key都申请一个结构通过链表串起来，而是以
-bmap为最小粒度挂载，一个bmap可以放8个kv。
+用链表来解决冲突，出现冲突时，不是每一个key都申请一个结构通过链表串起来，而是以bmap为最小粒度挂载，一个bmap可以放8个kv。
 
-在哈希函数的选择上，会在程序启动时，检测cpu是否支持aes，如果支持，则使用aeshash，否
-则使用memhash。每个map的底层结构是hmap，是有若干个结构为bmap的 bucket组成的数
-组。每个bucket底层都采用链表结构。
+在哈希函数的选择上，会在程序启动时，检测cpu是否支持aes，如果支持，则使用aeshash，否则使用memhash。每个map的底层结构是hmap，是有若干个结构为bmap的 bucket组成的数组。每个bucket底层都采用链表结构。
 
-```
+```go
 type hmap struct {
-count int // 元素个数
-flags uint
-B uint8 // 扩容常量相关字段B是buckets数组的⻓度的对
-数 2^B
-noverflow uint16 // 溢出的bucket个数
-hash0 uint32 // hash seed
-buckets unsafe.Pointer // buckets 数组指针
-oldbuckets unsafe.Pointer // 结构扩容的时候用于赋值的buckets数组
-nevacuate uintptr // 搬迁进度
-extra *mapextra // 用于扩容的指针
+    count int // 元素个数
+    flags uint
+    B uint8 // 扩容常量相关字段B是buckets数组的⻓度的对数 2^B
+    noverflow uint16 // 溢出的bucket个数
+    hash0 uint32 // hash seed
+    buckets unsafe.Pointer // buckets 数组指针
+    oldbuckets unsafe.Pointer // 结构扩容的时候用于赋值的buckets数组
+    nevacuate uintptr // 搬迁进度
+    extra *mapextra // 用于扩容的指针
 }
 ```
-```
-1 2 3 4 5 6 7 8 9
-```
-```
-10
-11
-```
-### 27. GolangM ap如何扩容
+### 27. GolangMap如何扩容
 
-```
-a. 双倍扩容：扩容采取了一种称为“渐进式”的方式，原有的key并不会一次性搬迁完毕，每次
-最多只会搬迁2个bucket。
-b. 等量扩容：重新排列，极端情况下，重新排列也解决不了，map存储就会蜕变成链表，性能大
-大降低，此时哈希因子hash0的设置，可以降低此类极端场景的发生。
-```
+a. 双倍扩容：扩容采取了一种称为“渐进式”的方式，原有的key并不会一次性搬迁完毕，每次最多只会搬迁2个bucket。
 
-```
+b. 等量扩容：重新排列，极端情况下，重新排列也解决不了，map存储就会蜕变成链表，性能大大降低，此时哈希因子hash0的设置，可以降低此类极端场景的发生。
+
 c. 装载因子超过阈值，源码里定义的阈值是6.5。
-d. overflow的bucket数量过多map的bucket定位和key的定位高八位用于定位bucket，低八
-位用于定位key，快速试错后再进行完整对比
-```
-### 28. GolangM ap查找
 
-Go语言中map采用的是哈希查找表，由一个key通过哈希函数得到哈希值， 6 4位系统中就生成
-一个64bit的哈希值，由这个哈希值将key对应存到不同的桶（bucket）中，当有多个哈希映射到
-相同的的桶中时，使用链表解决哈希冲突。
+d. overflow的bucket数量过多map的bucket定位和key的定位高八位用于定位bucket，低八位用于定位key，快速试错后再进行完整对比
 
-细节：key经过hash后共64位，根据hmap中B的值，计算它到底要落在哪个桶时，桶的数量
-为2^B，如B=5，那么用64位最后5位表示第几号桶，在用hash值的高 8位确定在bucket中的
-存储位置，当前bmap中的bucket未找到，则查询对应的overflowbucket，对应位置有数据则
-对比完整的哈希值，确定是否是要查找的数据。如果当前map处于数据搬移状态，则优先从
-oldbuckets查找。
+### 28. Golang Map查找
+
+Go语言中map采用的是哈希查找表，由一个key通过哈希函数得到哈希值， 6 4位系统中就生成一个64bit的哈希值，由这个哈希值将key对应存到不同的桶（bucket）中，当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
+
+细节：key经过hash后共64位，根据hmap中B的值，计算它到底要落在哪个桶时，桶的数量为2^B，如B=5，那么用64位最后5位表示第几号桶，在用hash值的高 8位确定在bucket中的存储位置，当前bmap中的bucket未找到，则查询对应的overflowbucket，对应位置有数据则对比完整的哈希值，确定是否是要查找的数据。如果当前map处于数据搬移状态，则优先从oldbuckets查找。
 
 ### 29. Go的原生map中删除元素，内存会自动释放吗？
 
-## ◦ 如果删除的元素是值类型，如int，float，bool，string以及数组和struct，map的内存不会自
+- 如果删除的元素是值类型，如int，float，bool，string以及数组和struct，map的内存不会自动释放；
 
-#### 动释放；
+- 如果删除的元素是引用类型，如指针，slice，map，chan等，map的内存会自动释放，但释放的内存是子元素应用类型的内存占用；
 
-## ◦ 如果删除的元素是引用类型，如指针，slice，map，chan等，map的内存会自动释放，但释放
-
-#### 的内存是子元素应用类型的内存占用；
-
-## ◦ 将map设置为nil后，内存被回收；
+- 将map设置为nil后，内存被回收；
 
 ### 30. slices能作为map类型的key吗？
 
-在golang规范中，可比较的类型都可以作为mapkey。
+在golang规范中，**可比较**的类型都可以作为map key。
 
 不能作为mapkey的类型包括：
 
-## ◦ slices
+- slices
 
-## ◦ maps
+- maps
 
-## ◦ functions
+- functions
 
-### 31. 介绍一下C hannel
+### 31. 介绍一下Channel
 
-Go语言中，不通过共享内存来通信，而通过通信来实现内存共享。Go的CSP（Communicating
-SequentialProcess）并发模型，中文可以叫做通信顺序进程，是通过goroutine和 channel来实
-现的。
+Go语言中，不通过共享内存来通信，而通过通信来实现内存共享。Go的CSP（Communicating Sequential Process）并发模型，中文可以叫做通信顺序进程，是通过goroutine和channel来实现的。
 
-channel收发遵循先进先出FIFO的原则。分为有缓冲区和无缓冲区，channel中包括buffer、
-sendx和recvx收发的位置（ringbuffer记录实现）、sendq、recv。当channel因为缓冲区不足
-而阻塞了队列，则使用双向链表存储。
+channel收发遵循先进先出FIFO的原则。分为有缓冲区和无缓冲区，channel中包括buffer、sendx和recvx收发的位置（ringbuffer记录实现）、sendq、recv。当channel因为缓冲区不足而阻塞了队列，则使用双向链表存储。
 
 ### 32. Channel是线程安全的吗？
 
-
 channel是线程安全的，原因是channel内部实现了锁的机制。
 
-### 33. Channel的r ingb uffer实现
+### 33. Channel的ring buffer实现
 
-channel中使用了ringbuffer（环形缓冲区）来缓存写入的数据。ringbuffer有很多好处，而且
-非常适合用来实现FIFO式的固定⻓度队列。在channel中，ringbuffer的实现如下：
+channel中使用了ring buffer（环形缓冲区）来缓存写入的数据。ring buffer有很多好处，而且非常适合用来实现FIFO式的固定⻓度队列。在channel中，ring buffer的实现如下：
 
-#### 
+![alt text](images/image.png)
 
-上图展示的是一个缓冲区为8的channelbuffer，recvx指向最早被读取的数据，sendx指向再次
-写入时插入的位置。
+上图展示的是一个缓冲区为8的 channel buffer，recvx指向最早被读取的数据，sendx指向再次写入时插入的位置。
 
 ### 34. 当Channel通道被close后，读会带来什么问题？
 
 #### 读取没问题，但是写入就会有问题。
 
-```
+``` go
 package main
-```
-```
+
 import ("fmt")
-```
-```
+
 func main() {
-ch := make(chan int, 2 )// 向通道发送数据
-ch <- 1 ch <- 2 // 关闭通道
-close(ch)// 安全地从通道读取数据
-val, ok := <-chfmt.Println(val, ok) // 输出: 1 true
-val, ok = <-chfmt.Println(val, ok) // 输出: 2 true
-// 当通道中没有数据时，从已关闭的通道读取
-val, ok = <-chfmt.Println(val, ok) // 输出: 0 false
-// 再次尝试向已关闭的通道发送数据将导致 panic
-defer func() {
-if r := recover(); r != nil {
-fmt.Println("Recovered from panic:", r)
-}
-}()
-```
-```
-1 2 3 4 5 6 7 8 9
-```
-```
-10
-11
-12
-13
-14
-15
-16
-17
-18
-```
-
-```
-ch <- 3 // 这将引发 panic
+    ch := make(chan int, 2)// 向通道发送数据
+    ch <- 1 ch <- 2 // 关闭通道
+    close(ch)// 安全地从通道读取数据
+    val, ok := <-chfmt.Println(val, ok) // 输出: 1 true
+    val, ok = <-chfmt.Println(val, ok) // 输出: 2 true
+    // 当通道中没有数据时，从已关闭的通道读取
+    val, ok = <-chfmt.Println(val, ok) // 输出: 0 false
+    // 再次尝试向已关闭的通道发送数据将导致 panic
+    defer func() {
+        if r := recover(); r != nil {
+        fmt.Println("Recovered from panic:", r)
+        }
+    }()
+    ch <- 3 // 这将引发 panic
 }
 ```
-```
-19
-20
-```
-### 35. forr ange的时候它的地址会发生变化么？
+### 35. for range的时候它的地址会发生变化么？
 
-在fora,b:=rangec{}遍历中，a和b在内存中只会存在一份，即之后每次循环时遍历到的数据都
-是以值覆盖的方式赋给a和b，a，b的内存地址始终不变。由于有这个特性，for循环里面如果开
-协程，不要直接把a或者b的地址传给协程。解决办法：在每次循环时，创建一个临时变量。
+在for a,b:=rangec{} 遍历中，a和b在内存中只会存在一份，即之后每次循环时遍历到的数据都是以值覆盖的方式赋给a和b，a，b的内存地址始终不变。由于有这个特性，for循环里面如果开协程，不要直接把a或者b的地址传给协程。解决办法：在每次循环时，创建一个临时变量。
 
-### 36. g olang中解析t ag是怎么实现的？反射原理是什么？
+### 36. golang中解析 tag 是怎么实现的？反射原理是什么？
 
-Go中解析的tag是通过反射实现的，反射是指计算机程序在运行时（Runtime）可以访问、检测
-和修改它本身状态或行为的一种能力或动态知道给定数据对象的类型和结构，并有机会修改它。反
-射将接口变量转换成反射对象Type和Value；反射可以通过反射对象Value还原成原先的接口变
-量；反射可以用来修改一个变量的值，前提是这个值可以被修改；tag是啥：结构体支持标记，
-namestringjson:name-field就是json:name-field这部分
+Go中解析的tag是通过反射实现的，反射是指计算机程序在运行时（Runtime）可以访问、检测和修改它本身状态或行为的一种能力或动态知道给定数据对象的类型和结构，并有机会修改它。反射将接口变量转换成反射对象Type和Value；反射可以通过反射对象Value还原成原先的接口变量；反射可以用来修改一个变量的值，前提是这个值可以被修改；tag是啥：结构体支持标记，namestringjson:name-field就是json:name-field这部分
 
-gormjsonyamlgRPCprotobufgin.Bind()都是通过反射来实现的。
+gorm json yaml gRPCprotobuf gin.Bind()都是通过反射来实现的。
 
-```
+```go
 type User struct {
-name string `json:name-field`
-age int
+    name string `json:name-field`
+    age int
 }
 func main() {
-user := &User{"John Doe The Fourth", 20 }
-```
-```
-field, ok := reflect.TypeOf(user).Elem().FieldByName("name")
-if !ok {
-panic("Field not found")
+    user := &User{"John Doe The Fourth", 20 }
+
+    field, ok := reflect.TypeOf(user).Elem().FieldByName("name")
+
+    if !ok {
+        panic("Field not found")
+    }
+    fmt.Println(getStructTag(field))
 }
-fmt.Println(getStructTag(field))
-}
-```
-```
 func getStructTag(f reflect.StructField) string {
-return string(f.Tag)
+    return string(f.Tag)
 }
-```
-```
-1 2 3 4 5 6 7 8 9
-```
-```
-10
-11
-12
-13
-14
-15
-16
-17
 ```
 ### 37. 调用函数传入结构体时，应该传值还是指针？
 
-Go的函数参数传递都是值传递。所谓值传递：指在调用函数时将实际参数复制一份传递到函数
-中，这样在函数中如果对参数进行修改，将不会影响到实际参数。参数传递还有引用传递，所谓引
-用传递是指在调用函数时将实际参数的地址传递到函数中，那么在函数中对参数所进行的修改，将
-影响到实际参数
+Go的函数参数传递都是值传递。所谓值传递：指在调用函数时将实际参数复制一份传递到函数中，这样在函数中如果对参数进行修改，将不会影响到实际参数。参数传递还有引用传递，所谓引用传递是指在调用函数时将实际参数的地址传递到函数中，那么在函数中对参数所进行的修改，将影响到实际参数
 
 
-因为Go里面的map，slice，chan是引用类型。变量区分值类型和引用类型。所谓值类型：变量
-和变量的值存在同一个位置。所谓引用类型：变量和变量的值是不同的位置，变量的值存储的是对
-值的引用。但并不是map，slice，chan的所有的变量在函数内都能被修改，不同数据类型的底层
-存储结构和实现可能不太一样，情况也就不一样。
+因为Go里面的map，slice，chan是引用类型。变量区分值类型和引用类型。所谓值类型：变量和变量的值存在同一个位置。所谓引用类型：变量和变量的值是不同的位置，变量的值存储的是对值的引用。但并不是map，slice，chan的所有的变量在函数内都能被修改，不同数据类型的底层存储结构和实现可能不太一样，情况也就不一样。
 
-### 38. 讲讲G o的s elect底层数据结构和一些特性？
+### 38. 讲讲Go的 select 底层数据结构和一些特性？
 
-go的select为golang提供了多路IO复用机制，和其他IO复用一样，用于检测是否有读写事件是
-否ready。linux的系统IO模型有select，poll，epoll，go的select和linux系统select非常相
-似。
+go的select为golang提供了多路IO复用机制，和其他IO复用一样，用于检测是否有读写事件是否ready。linux的系统IO模型有select，poll，epoll，go的select和linux系统select非常相似。
 
-select结构组成主要是由case语句和执行的函数组成，select实现的多路复用是：每个线程或者
-进程都先到注册和接受的channel（装置）注册，然后阻塞，然后只有一个线程在运输，当注册的
-线程和进程准备好数据后，装置会根据注册的信息得到相应的数据。
+select结构组成主要是由case语句和执行的函数组成，select实现的多路复用是：每个线程或者进程都先到注册和接受的channel（装置）注册，然后阻塞，然后只有一个线程在运输，当注册的线程和进程准备好数据后，装置会根据注册的信息得到相应的数据。
 
 select的特性：
 
-## ◦ select操作至少要有一个case语句，出现读写nil的channel该分支会忽略，在nil的
+- select操作至少要有一个case语句，出现读写nil的channel该分支会忽略，在nil的channel上操作则会报错。
+- select仅支持管道，而且是单协程操作。
+- 每个case语句仅能处理一个管道，要么读要么写。
+- 多个case语句的执行顺序是随机的。
+- 存在default语句，select将不会阻塞，但是存在default会影响性能。
 
-```
-channel上操作则会报错。
-```
-## ◦ select仅支持管道，而且是单协程操作。
-
-## ◦ 每个case语句仅能处理一个管道，要么读要么写。
-
-## ◦ 多个case语句的执行顺序是随机的。
-
-## ◦ 存在default语句，select将不会阻塞，但是存在default会影响性能。
-
-### 39. 能介绍下r une类型吗？
+### 39. 能介绍下rune类型吗？
 
 相当int32
 
-golang中的字符串底层实现是通过byte数组的，中文字符在unicode下占 2 个字节，在utf-8编码下
-占 3 个字节，而golang默认编码正好是utf-8。
+golang中的字符串底层实现是通过byte数组的，中文字符在unicode下占 2 个字节，在utf-8编码下占 3 个字节，而golang默认编码正好是utf-8。
 
 byte等同于int8，常用来处理ascii字符。
 
@@ -567,140 +438,97 @@ rune等同于int32，常用来处理unicode或utf-8字符。
 Context通常被称为上下文，在go中，理解为goroutine的运行状态、现场，存在上下层goroutine
 context的传递，上层goroutine会把context传递给下层goroutine。
 
-Go的Context的数据结构包含Deadline，Done，Err，Value，Deadline方法返回一个
-time.Time，表示当前Context应该结束的时间，ok则表示有结束时间，Done方法当Context被
-取消或者超时时候返回的一个close的channel，告诉给context相关的函数要停止当前工作然后
-返回了，Err表示context被取消的原因，Value方法表示context实现共享数据存储的地方，是协
-程安全的。
+Go的Context的数据结构包含Deadline，Done，Err，Value，Deadline方法返回一个time.Time，表示当前Context应该结束的时间，ok则表示有结束时间，Done方法当Context被取消或者超时时候返回的一个close的channel，告诉给context相关的函数要停止当前工作然后返回了，Err表示context被取消的原因，Value方法表示context实现共享数据存储的地方，是协程安全的。
 
 主要应用场景：
 
 
-## ◦ 上下文控制；
+- 上下文控制；
 
-## ◦ 多个goroutine之间的数据交互等；
+- 多个goroutine之间的数据交互等；
 
-## ◦ 超时控制：到某个时间点超时，过多久超时。
+- 超时控制：到某个时间点超时，过多久超时。
+
+![alt text](images/image-1.png)
 
 ### 41. Go多返回值怎么实现的？
 
-Go传参和返回值是通过FP+offset实现，并且存储在调用函数的栈帧中。FP栈底寄存器，指向一
-个函数栈的顶部；PC程序计数器，指向下一条执行指令；SB指向静态数据的基指针，全局符号；
-SP栈顶寄存器。
+Go传参和返回值是通过FP+offset实现，并且存储在调用函数的栈帧中。FP栈底寄存器，指向一个函数栈的顶部；PC程序计数器，指向下一条执行指令；SB指向静态数据的基指针，全局符号；SP栈顶寄存器。
 
 ### 42. Go语言中不同的类型如何比较是否相等？
 
-像string，int，floatinterface等可以通过reflect.DeepEqual和等于号进行比较，像slice，
-struct，map则一般使用reflect.DeepEqual来检测是否相等。
+像string，int，float interface等可以通过reflect.DeepEqual和等于号进行比较，像slice,struct，map则一般使用reflect.DeepEqual来检测是否相等。
 
-### 43. Go中i nit函数的特征?
+### 43. Go中init函数的特征?
 
-一个包下可以有多个init函数，每个文件也可以有多个init函数。多个init函数按照它们的文件名
-顺序逐个初始化。应用初始化时初始化工作的顺序是，从被导入的最深层包开始进行初始化，层层
-递出最后到main包。不管包被导入多少次，包内的init函数只会执行一次。但包级别变量的初始
-化先于包内init函数的执行。
+一个包下可以有多个init函数，每个文件也可以有多个init函数。多个init函数按照它们的文件名顺序逐个初始化。应用初始化时初始化工作的顺序是，从被导入的最深层包开始进行初始化，层层递出最后到main包。不管包被导入多少次，包内的init函数只会执行一次。但包级别变量的初始化先于包内init函数的执行。
 
-### 44. Go中u intptr和u nsafe.Pointer的区别？
+### 44. Go中uintptr和unsafe.Pointer的区别？
 
-unsafe.Pointer是通用指针类型，它不能参与计算，任何类型的指针都可以转化成
-unsafe.Pointer，unsafe.Pointer可以转化成任何类型的指针，uintptr可以转换为
-unsafe.Pointer，unsafe.Pointer可以转换为uintptr。uintptr是指针运算的工具，但是它不能持
-有指针对象（意思就是它跟指针对象不能互相转换），unsafe.Pointer是指针对象进行运算（也就
-是uintptr）的桥梁。
+unsafe.Pointer是通用指针类型，它不能参与计算，任何类型的指针都可以转化成unsafe.Pointer，unsafe.Pointer可以转化成任何类型的指针，uintptr可以转换为unsafe.Pointer，unsafe.Pointer可以转换为uintptr。uintptr是指针运算的工具，但是它不能持有指针对象（意思就是它跟指针对象不能互相转换），unsafe.Pointer是指针对象进行运算（也就是uintptr）的桥梁。
 
 ### 45. 深拷⻉和浅拷⻉
 
 #### 拷⻉最简单的一种形式如下：
 
-```
+```go
 a := 648
 b := a //把a 拷⻉给 b
 ```
-```
-1
-2
-```
 
-#### 深浅拷⻉也和类型有关
+深浅拷⻉也和类型有关
 
-#### 两种类型拷⻉效果不同，先说我们比较熟悉的值类型。如什么是拷⻉提问里易知，若是值类型的
+![alt text](images/image-2.png)
 
-#### 话，在每一次拷⻉后都会新申请一块空间存储值，拷⻉后的两个值类型独立不影响。
+两种类型拷⻉效果不同，先说我们比较熟悉的值类型。如什么是拷⻉提问里易知，若是值类型的话，在每一次拷⻉后都会新申请一块空间存储值，拷⻉后的两个值类型独立不影响。
 
 以引用类型的切片(Slice)为例来讲讲深拷⻉和浅拷⻉：
 
-### 46. 如果f orr ange同时添加数据，f orr ange会无限执行吗？
+![alt text](images/image-3.png)
 
-不会，在执行forrange的时候实际遍历的是变量的副本，所以改变遍历的变量是不会有影响的。
+### 46. 如果for range同时添加数据，for range会无限执行吗？
+
+不会，在执行for range的时候实际遍历的是变量的副本，所以改变遍历的变量是不会有影响的。
 
 ### 47. 单引号，双引号，反引号的区别？
 
-## ◦ 单引号，表示byte类型或rune类型，对应uint8和int32类型，默认是rune类型。byte用来强
+- 单引号，表示byte类型或rune类型，对应uint8和int32类型，默认是rune类型。byte用来强调数据是rawdata，而不是数字；而rune用来表示Unicode的codepoint。
 
-```
-调数据是rawdata，而不是数字；而rune用来表示Unicode的codepoint。
-```
-## ◦ 双引号，是字符串，实际上是字符数组。可以用索引号访问某字节，也可以用len()函数来获取
+- 双引号，是字符串，实际上是字符数组。可以用索引号访问某字节，也可以用len()函数来获取字符串所占的字节⻓度。
 
-#### 字符串所占的字节⻓度。
-
-## ◦ 反引号，表示字符串字面量，但不支持任何转义序列。字面量rawliteralstring的意思是，你
-
-#### 定义时写的啥样，它就啥样，你有换行，它就换行。你写转义字符，它也就展示转义字符。
+- 反引号，表示字符串字面量，但不支持任何转义序列。字面量rawliteralstring的意思是，你定义时写的啥样，它就啥样，你有换行，它就换行。你写转义字符，它也就展示转义字符。
 
 ### 48. 什么是数据溢出？
 
-在使用数字类型时如果数据达到最大值，则接下来的数据将会溢出，如uint溢出后会从0开始，
-int溢出后会变为负数。
+在使用数字类型时如果数据达到最大值，则接下来的数据将会溢出，如uint溢出后会从0开始，int溢出后会变为负数。
 
-```
+```go 
 package main
-```
-```
-import (
-"fmt"
-"math"
-)
-```
-```
-func main() {
-```
-```
-1 2 3 4 5 6 7 8
-```
 
-```
-var n int8 = math.MaxInt
-var m uint8 = math.MaxUint
-```
-```
-n += 2
-m += 1
-```
-```
-fmt.Println(n) // -
-fmt.Println(m) // 0
+import (
+    "fmt"
+    "math"
+)
+
+func main() {
+    var n int8 = math.MaxInt
+    var m uint8 = math.MaxUint8
+
+    n += 2
+    m += 1
+
+    fmt.Println(n)
+    fmt.Println(m)
 }
 ```
-```
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-```
-#### 如何避免？
 
-## ◦ 正数优先使用uint,范围更大
+如何避免？
 
-## ◦ 添加判断代码判断是否溢出
+- 正数优先使用uint,范围更大
 
-## 并发篇
+- 添加判断代码判断是否溢出
+
+## 并发篇 ===
 
 ### 1. Mutex几种状态
 
