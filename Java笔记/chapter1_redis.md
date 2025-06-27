@@ -12,7 +12,7 @@
 - **消息队列、延迟队列**
 
 ## 什么是缓存穿透? 怎么解决?
-![](https://secure2.wostatic.cn/static/33RBP8NF6JteNhFCvWoqoK/image.png?auth_key=1750481991-5FZYV8e54z8k8sc4A8ajJB-0-23226577f10cae4ac5a4c74c4e47962e)
+![alt text](images/image.png)
 
 ### **是什么：**
 
@@ -29,15 +29,13 @@
     缺点：消耗内存，可能发生不一致问题
 - **布隆过滤器**
 
-    ![](https://secure2.wostatic.cn/static/q2ivMvX9qd5ndpZi3DU1SU/image.png?auth_key=1750481991-fAPQCU5sfLgoJnbqDQ1aJu-0-378032a20960e07574eb73ddd3de199f)
+    ![alt text](images/image-1.png)
 
     仍然存在误判的可能性。
 
     误判率：数组越小误判率就越大，数组越大误判率就越小，但是同时带来了更多的内存消耗。
 
-    
-
-    ![](https://secure2.wostatic.cn/static/kes2eXSnDSC7WCNRsMf989/image.png?auth_key=1750481991-9oE514PNhDgx2HW7z11469-0-2455a07bf63eb1eba2a02c148381b4cd)
+    ![alt text](images/image-2.png)
 
     优点：内存占用较少，没有多余key
 
@@ -53,9 +51,9 @@
 
 - **互斥锁**
 
-    ![](https://secure2.wostatic.cn/static/3Fyw5kcLcjFzLQEaBnJjbo/image.png?auth_key=1750481991-egnkVa9oyXmEnj8dzQvah1-0-7e752266cf2f11bde033413de3834d2a)
+    ![alt text](images/image-3.png)
 
-    
+    ![alt text](images/image-4.png)
 
 当缓存失效时，不立即去`load db`，先使用如 Redis 的`setnx` 去设置一个互斥锁，当操作成功返回时再进行`load db`的操作并回设缓存，否则重试`get`缓存的方法
 
@@ -112,11 +110,9 @@
 
     记录了所有的 `DDL`（数据定义语言）语句和 `DML`（数据操纵语言）语句，但不包括数据查询（SELECT、SHOW）语句。
 
-    
+    ![alt text](images/image-5.png)
 
-    ![](https://secure2.wostatic.cn/static/vyRHixbKxHuA5tWonmpFkP/image.png?auth_key=1750481991-ffnwUWKituCXqy7TopGgPm-0-f0beaafc43c1639cf6682145f6db6dc4)
-
-    ![](https://secure2.wostatic.cn/static/s6PMciQhnrv57Pjq6vonq6/image.png?auth_key=1750481991-qTbyX5qcqJd2HK7Cx4oJTg-0-b3584ef9b404af7fbcfed428435445c3)
+    ![alt text](images/image-6.png)
 
 ## redis做为缓存，数据的持久化是怎么做的？
 
@@ -143,7 +139,7 @@
 
     因为是记录命令，**AOF**文件会比RDB文件**大的多**。而且AOF会记录对同一个key的多次写操作，但只有最后一次写操作才有意义。通过执行`bgrewriteaof`命令，可以让AOF文件执行重写功能，用最少的命令达到相同效果。Redis也会在触发**阈值**时自动去重写AOF文件。阈值也可以在`redis.conf`中配置
 
-    ![](https://secure2.wostatic.cn/static/q3whygc5sFBtwnBkWq3UuJ/image.png?auth_key=1750481991-692dceeydSnqBa9FfnZUGE-0-a8f94e2452ef614e9cd4bd74ac50150c)
+    ![alt text](images/image-7.png)
 
 ## Redis的数据过期策略有哪些 ?
 
@@ -202,9 +198,9 @@
 
 由于**redis是单线程的**，用了命令之后，只能有一个客户端对某一个key设置值，在没有过期或删除key的时候是其他客户端是不能设置这个key的
 
-![](https://secure2.wostatic.cn/static/3btXrtHBQcB3nGFpSKuwU3/image.png?auth_key=1750481992-eBFFtLn64nrUgkWLen99tR-0-bb93a9b27b4574e5c9716346403423bf)
+![alt text](images/image-8.png)
 
-![](https://secure2.wostatic.cn/static/nyfJ5MR5dZUTDiLaXLto11/image.png?auth_key=1750481992-vKeZgb6cpaWDjVR8wSkr15-0-b344d67aaec7241da12f4c4b34298bb6)
+![alt text](images/image-9.png)
 
 ## 如何控制Redis实现分布式锁有效时长呢？
 
@@ -217,7 +213,7 @@
 
     还有一个好处就是，在高并发下，一个业务有可能会执行很快，先客户1持有锁的时候，客户2来了以后并不会马上拒绝，它会**自旋**不断尝试获取锁，如果客户1释放之后，客户2就可以马上持有锁，性能也得到了提升。
 
-    ![](https://secure2.wostatic.cn/static/mfqvK6H46M2YQtnGWyFPZa/image.png?auth_key=1750481992-fhmccd6XGFEEghaiMAtNVc-0-c4866c3d49187398b98ce968d56d057c)
+    ![alt text](images/image-10.png)
 
 ## redisson实现的分布式锁是可重入的吗？
 
@@ -225,7 +221,7 @@
 
 这样做是为了**避免死锁**的产生。这个重入其实在内部就是判断是否是当前线程持有的锁，如果是当前线程持有的锁就会**计数**，如果**释放锁**就会在计算上**减一**。在存储数据的时候采用的**hash结构**，`大key`可以按照自己的业务进行定制，其中`小key`是当前线程的唯一标识，`value`是当前线程重入的次数
 
-![](https://secure2.wostatic.cn/static/7JXMD5ng5Ew28FUuzJLzZo/image.png?auth_key=1750481992-4bUXXyvFC7eg1N1gwhxXsW-0-a39c6afdb4f3c815d493816a92d26110)
+![alt text](images/image-11.png)
 
 ## redisson实现的分布式锁能解决主从一致性的问题吗
 
@@ -295,7 +291,7 @@
     - **master之间通过ping**监测彼此健康状态
     - 客户端请求可以访问集群**任意节点**，最终都会被**转发**到正确节点
 
-    ![](https://secure2.wostatic.cn/static/xpJnSBxe6dMUDbEUB6vAE8/image.png?auth_key=1750481992-2TyisDELyAyaqehGNPjKek-0-f8c85014a27e5429bc9c4081dfc27a19)
+    ![alt text](images/image-12.png)
 
 ## redis集群脑裂，该怎么解决呢？
 
@@ -312,7 +308,7 @@ redis中有两个配置参数：
 
 Redis 分片集群引入了**哈希槽**的概念，Redis 集群有 16384 个哈希槽，每个 key通过 **CRC16 校验**后对 16384 取模来决定放置哪个槽，集群的**每个节点负责一部分 hash 槽**。
 
-![](https://secure2.wostatic.cn/static/i2Zua5AwKSQf11q6N4ecF6/image.png?auth_key=1750482351-mFxkeqS9aG9tU5mPRjLjjE-0-fe0ec2326398bed878233fb8b0013d53)
+![alt text](images/image-13.png)
 
 ## Redis是单线程的，但是为什么还那么快？
 
@@ -326,17 +322,17 @@ Redis 分片集群引入了**哈希槽**的概念，Redis 集群有 16384 个哈
 
 - **阻塞IO BIO**
 
-    ![](https://secure2.wostatic.cn/static/cemREyXGU4Cbm2ZdpLgVjM/image.png?auth_key=1750482351-6HNE4fm9TxrYtYuKodbxrc-0-ccc9eda37fbb749d99e05e748668d6a2)
+    ![alt text](images/image-14.png)
+
 - **非阻塞IO NIO**
 
-    ![](https://secure2.wostatic.cn/static/oEeDjHrHpwD2f3rRNr2BUg/image.png?auth_key=1750482351-uhTdmj7aPtKP77TaQ7ZoCX-0-ac79982039fa1146ea30f8bc44587e5f)
+    ![alt text](images/image-15.png)
+
 - **IO多路复用**
 
     是利用单个线程来同时监听多个**Socket **，并在**某个Socket可读、可写时得到通知**，从而避免无效的等待，充分利用CPU资源。
 
-    
-
-    ![](https://secure2.wostatic.cn/static/gL81F3FpjD5JeMJ9HXrVJK/image.png?auth_key=1750482351-2BTEujq7KBfFpGP6oFQobs-0-b2341c1aa30caab9833722c452c286ea)
+    ![alt text](images/image-16.png)
 
     监听Socket的方式、通知的方式又有多种实现，常见的有：
 
@@ -354,25 +350,29 @@ Redis的数据结构相当高效，这也是Redis性能高的一个原因。
 
 ### string
 
-![](https://secure2.wostatic.cn/static/4EF1wEs9RrEFSmjQXYsxwQ/image.png?auth_key=1750482357-3ysRXQTp5fsGmQBYRbt2v5-0-802ff6c4d417e2c1015bb31b889e2c45)
+![alt text](images/image-17.png)
 
 #### **应用场景：**
 
 - 单值缓存
 
-    ![](https://secure2.wostatic.cn/static/sDs1t981E91HygTG6yBc3H/image.png?auth_key=1750482357-hkWC7eqQA9CVNcZpBWwhAA-0-d5d5c733c5150957e08942bbe9a5166f)
+    ![alt text](images/image-18.png)
+
 - 对象缓存
 
-    ![](https://secure2.wostatic.cn/static/vETaxpxGrbLuc4BhEdmQud/image.png?auth_key=1750482357-HWnMjStaEyP3DefH4cU8t-0-a7f34f8fb8016263efa57489443c947d)
+    ![alt text](images/image-19.png)
+
 - 分布式锁
 
-    ![](https://secure2.wostatic.cn/static/mryfMuEZ3Lr5MLcfNo39E3/image.png?auth_key=1750482412-5Hh4SaKwoVztYhK7Hd7Bd2-0-7303893c022d53fb012a1937d9be5ea1)
+    ![alt text](images/image-20.png)
+
 - 计数器
 
-    ![](https://secure2.wostatic.cn/static/2dKspkdGZPy2DmMynuCAuT/image.png?auth_key=1750482412-eDoq2Azxku5e2ekcZhcXfL-0-ede15be6bda76226c690c95c51445643)
+    ![alt text](images/image-21.png)
+
 - 分布式系统全局id
 
-    ![](https://secure2.wostatic.cn/static/p3qFhYMGm8aR2e4p71GxMM/image.png?auth_key=1750482413-kZkMs59iC2BRMbmQ5n9fiD-0-a4a36aab6bdddc9d307d87fb01d0b2a0)
+    ![alt text](images/image-22.png)
 
 #### **底层实现**
 
@@ -380,21 +380,22 @@ Redis的数据结构相当高效，这也是Redis性能高的一个原因。
 
     假如存储的是整数型值，比如set num 123这样的类型，就会使用int的存储方式进行存储，在redisObject的ptr属性中就会保存该值。
 
-    ![](https://secure2.wostatic.cn/static/eGa9W6RaEATHxES2cgjAGT/image.png?auth_key=1750482413-6F3Ty2kZ4T6MHCBdYX6Lnk-0-47c2b345ed4f325c6919bf20187d0c0c)
+    ![alt text](images/image-23.png)
+
 - **SDS类型**
 
     假如存储的字符串是一个字符串值并且**长度大于32个字节**就会使用SDS（simple dynamic string）方式进行存储，并且encoding设置为raw；
 
-    ![](https://secure2.wostatic.cn/static/piDCCpsEjSJgVKzGD7Fcgs/image.png?auth_key=1750482413-wEoC5h3Tt7eQXKhSBPFscN-0-e052a7abf4336ea96599218a8a6c775f)
+    ![alt text](images/image-24.png)
 - **embstr类型**
 
     若是字符串长度**小于等于32个字节**就会将encoding改为embstr来保存字符串。
 
-    ![](https://secure2.wostatic.cn/static/2KvXLP5PoPjf8vrwtUs6sa/image.png?auth_key=1750482414-8gZmxJX9STz7ffRQG2WQXi-0-a698cec1151c0cd23ad36b3099ce42ba)
+    ![alt text](images/image-25.png)
 
 ### hash
 
-![](https://secure2.wostatic.cn/static/ozj7MnDLWKjiWSP1DMSEDr/image.png?auth_key=1750482415-tYR2wccVkGNbrJLATvwZPX-0-0f2a759f5ec71d5b3de05a00894f45a2)
+![alt text](images/image-26.png)
 
 #### **应用场景：**
 
@@ -402,13 +403,13 @@ Redis的数据结构相当高效，这也是Redis性能高的一个原因。
 
 存储对象可以用string类型存储json，但也可以用hash结构存储对象。hash结构明显更快
 
-![](https://secure2.wostatic.cn/static/7av3Ydyc1L5HQVfMZVpxNG/image.png?auth_key=1750482415-t4CfQuMM7PHeyPKaFtMHTr-0-9e89ec9868b46165f931819300dfb036)
+![alt text](images/image-27.png)
 
 - 电商购物车
 
-![](https://secure2.wostatic.cn/static/cdmkatB4hmqzjfgdCu65HK/image.png?auth_key=1750482415-oDfUQ891mm9RSrJoH8BxA4-0-1d538df325264b5441c77930c275ea37)
+![alt text](images/image-28.png)
 
-![](https://secure2.wostatic.cn/static/PCfAo2qj8NXPyqY2iDVbY/image.png?auth_key=1750482439-ufmPw2kVLG32Fb1h717vxc-0-996eedfa4941762db5d57208efd26ed0)
+![alt text](images/image-29.png)
 
 #### **底层实现**
 
@@ -418,7 +419,7 @@ Redis的hash对象有两种编码（底层实现）方式，**字典编码（has
 
 在哈希对象保存的所有键值对的键和值的**字符串长度都小于 64 字节**和**哈希对象保存的键值对数量小于 512 个**使用的是ziplist，不能满足这个的使用的是hashtable（字典编码）
 
-![](https://secure2.wostatic.cn/static/uvwDhtC7qv2k1sMGGCMmR/image.png?auth_key=1750482439-4QDttwBHxsiqgfdVT95tMv-0-fb8b23c9617f6c8c3c3b4c40f242a4b1)
+![alt text](images/image-30.png)
 
 - 压缩链表由于是连续空间在刚开始**数据量小的时候性能是显著的**，但是在数据量大的时候就会出现扩容慢的问题。
 
@@ -439,7 +440,7 @@ Redis的hash对象有两种编码（底层实现）方式，**字典编码（has
 
         存储具体元素，结构如下：
 
-        ![](https://secure2.wostatic.cn/static/kTFiQLe6ZxMKdHkhaxfyCJ/image.png?auth_key=1750482440-jfDHVp2SX9zXyuKKPMpLwi-0-b68e3a3098acf2727a6f6b349f97d0aa)
+        ![alt text](images/image-31.png)
 
         其中，previous记录前一个元素的长度，encoding记录数据类型，content记录数据
     - **zlend**
@@ -448,15 +449,15 @@ Redis的hash对象有两种编码（底层实现）方式，**字典编码（has
 
 ### list
 
-![](https://secure2.wostatic.cn/static/uqE5yxsby6PXr5ERAWVi2B/image.png?auth_key=1750482440-nr4FSdNYT8ZFzXYEWtCCmq-0-ab60daa08a5c1c0a65598291551c1901)
+![alt text](images/image-33.png)
 
-![](https://secure2.wostatic.cn/static/rWjC1vakkcR9cU89N6ZoHC/image.png?auth_key=1750482440-e6xo3doNe65dw2ux7FNPqY-0-f7bb917cfc62aceece7d023e53b04227)
+![alt text](images/image-32.png)
 
 #### **应用场景：**
 
 - feed流
 
-![](https://secure2.wostatic.cn/static/6DJykk9m2miMdmmwR3FMmz/image.png?auth_key=1750482440-kghsQMJp9pQCdkwpR6pEsv-0-71e4cf382721f55f2469d82d572f7433)
+![alt text](images/image-34.png)
 
 #### **底层实现**
 
@@ -468,15 +469,15 @@ Redis中的列表在**3.2**之前的版本是使用`ziplist`和`linkedlist`进�
 
 **quicklist:**
 
-![](https://secure2.wostatic.cn/static/3tRqDACHcwLsPLsrsKoZCU/image.png?auth_key=1750482441-i1rFVp9ETTcSTcUNh6nTxG-0-bcbc5a96a4678cc4a6e1786b8215b3e7)
+![alt text](images/image-35.png)
 
 所以引入了quicklist
 
-![](https://secure2.wostatic.cn/static/nFqGavgzw43T1Sq1ahv6Ri/image.png?auth_key=1750482441-vGionFMDWN6TGJsb757qFR-0-54597f59b358c81658bcf4ce5513c90a)
+![alt text](images/image-36.png)
 
-![](https://secure2.wostatic.cn/static/jwKXJzpfUsg2XEDJ3RaJsH/image.png?auth_key=1750482441-p6z4CkU3LkT45E8K1PmTfq-0-4c9a00f466b42d377a3bfe699158eec6)
+![alt text](images/image-37.png)
 
-![](https://secure2.wostatic.cn/static/wxatmRysgfTJ3qHjTNsYQb/image.png?auth_key=1750482441-cGcZU9c1G1Y4wcdkUC1FJu-0-4784f106b3d7b3c4853cf14940f60386)
+![alt text](images/image-38.png)
 
 ### set
 
@@ -484,21 +485,19 @@ Redis中的列表在**3.2**之前的版本是使用`ziplist`和`linkedlist`进�
 
 - 抽奖
 
-![](https://secure2.wostatic.cn/static/ntL8F2zLYPJK1nRenFsT7m/image.png?auth_key=1750482442-xrv6kRK6BF12vMgyncjnFa-0-195c0cdea2ec4e083374ab916dd18d0b)
+![alt text](images/image-39.png)
 
 - 点赞/取消点赞
 
-![](https://secure2.wostatic.cn/static/dQrgKBRdke9X5iSAaVRoxb/image.png?auth_key=1750482442-8ukut4VBTYKraxB2ZCqWjS-0-9386894e5c066adaac4c546f65e704a4)
+![alt text](images/image-40.png)
 
 - 共同关注(关注模型)
 
     交集、并集、差集
 
-    ![](https://secure2.wostatic.cn/static/iu9ZsPCa6y3iDxy8pB2Hn9/image.png?auth_key=1750482443-bGSBRZaEPqAKg4LKgSspyR-0-9bb2845a783399b80574f7c27156fb77)
+    ![alt text](images/image-41.png)
 
-    ![](https://secure2.wostatic.cn/static/dufDsUyTdHNB6PWmeggJVu/image.png?auth_key=1750482443-e6nhSsz28HVPpisfxZVb7S-0-90eac839d3539a5f282582929b28bd74)
-
-
+    ![alt text](images/image-42.png)
 
 #### **底层实现**
 
@@ -508,9 +507,9 @@ Set的底层实现是**hashtable和intset**
 
 - 当`Set`中的**所有元素都是整数**且**元素数量较少**时，Redis使用`intset`作为更紧凑的存储方式。`intset`是一种专门针对整数优化的数据结构，能够有效节省内存并保持元素有序。
 
-    ![](https://secure2.wostatic.cn/static/vPMM9MLvYZ6VnMjzR7QoN9/image.png?auth_key=1750482443-HE6CdhsHsrTBLHGNPhZNT-0-b796e537e3066e76628b8999a7cd34b8)
+    ![alt text](images/image-43.png)
 
-    ![](https://secure2.wostatic.cn/static/3k3YHRoGCrweFM7XWjPJAm/image.png?auth_key=1750482443-hqZXkiswsL3xsQbi58LzTH-0-7c317b9e8ad1d3ff5a2aadcd9d6aa9d9)
+    ![alt text](images/image-44.png)
 
     contents[i]的长度根据encoding的要求分配，每个单位必须等长，方便随机寻址。
 
@@ -525,9 +524,9 @@ Set的底层实现是**hashtable和intset**
 
 ### zset
 
-![](https://secure2.wostatic.cn/static/buWYSscYwUnpmDBXKoQ8oH/image.png?auth_key=1750482444-rqDPGAeVhVFLtkze1qyscs-0-f99a4202720736165506fc80353d2d09)
+![alt text](images/image-45.png)
 
-![](https://secure2.wostatic.cn/static/hC9fmeqmtabYGWvGTVDeMw/image.png?auth_key=1750482444-3J9JwwJ6Hp6qSsxjGegDnL-0-0e5e919a224c724290f089ca4a169e73)
+![alt text](images/image-46.png)
 
 #### **应用场景**
 
@@ -538,4 +537,4 @@ Set的底层实现是**hashtable和intset**
 
 压缩链表→跳表
 
-![](https://secure2.wostatic.cn/static/aTHbpLQLtk1vhASCbxdUbv/image.png?auth_key=1750482445-355AWcJTWBuYY2hbibYoy8-0-3b699fb9d606b94972a704ea18788723)
+![alt text](images/image-47.png)
