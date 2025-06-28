@@ -9,7 +9,7 @@
 - 一次编写，到处运行
 - 自动内存管理，垃圾回收机制
 
-![](https://secure2.wostatic.cn/static/u1oT1qZiZvzanzt77Qf4Bp/image.png?auth_key=1750484325-x476xnKvFqpioH76mjYdCH-0-cb63e6400f39764e0a7c569d7c6838ba)
+![alt text](images/image-125.png)
 
 ## JVM由那些部分组成，运行流程是什么？
 
@@ -24,7 +24,7 @@
     字节码文件只是JVM的一套指令集规范，并不能直接交给底层系统去执行，而是有执行引擎运行
 3. **执行引擎（Execution Engine）**将字节码翻译为底层系统指令，再交由CPU执行去执行，此时需要调用其他语言的本地库接口（Native Method Library）来实现整个程序的功能。
 
-![](https://secure2.wostatic.cn/static/uRUxgywnD5YhaPW7bYLMwc/image.png?auth_key=1750484325-vmF6bkvrxYseeHgPHeQkeV-0-f0bbaba77cb9df91ace8727f50c07ae6)
+![alt text](images/image-126.png)
 
 ## 能详细说一下 JVM 运行时数据区吗？
 
@@ -74,7 +74,7 @@ Java中的堆术语线程共享的区域。主要用来保存对象实例，数�
 - 1.7中有有一个**永久代**，存储的是类信息、静态变量、常量、编译后的代码
 - 1.8**移除了永久代**，把数据存储到了本地内存的**元空间中**，防止内存溢出
 
-![](https://secure2.wostatic.cn/static/pVs4H1eTueNywiRkruYmGe/image.png?auth_key=1750484325-k1z8CRSyXbubSd4CsPKmyb-0-6385caa3ae95920d679b7b04c4b45dbf)
+![alt text](images/image-128.png)
 
 ## 能不能解释一下方法区？(本地方法栈)
 
@@ -82,7 +82,7 @@ Java中的堆术语线程共享的区域。主要用来保存对象实例，数�
 
 主要存储**类的信息**、运行时**常量池**
 
-![](https://secure2.wostatic.cn/static/anYHXsNEdyPfFuNCaVtBSY/image.png?auth_key=1750484325-6uyXH1JktMQfZWkRdXVNXV-0-f3c3ce7e8aae43f52fa1413a1538891e)
+![alt text](images/image-129.png)
 
 虚拟机启动的时候创建，关闭虚拟机时释放
 
@@ -92,9 +92,9 @@ Java中的堆术语线程共享的区域。主要用来保存对象实例，数�
 
 可以看作是一张表，虚拟机指令根据这张常量表找到要执行的类名、方法名、参数类型、字面量等信息
 
-![](https://secure2.wostatic.cn/static/rdPJXpgSPCqAfgMViLt9Ex/image.png?auth_key=1750484325-s78QD84asRB1M6ecqPvSXn-0-e9eaada5b7b5c6f50388bf735c932096)
+![alt text](images/image-130.png)
 
-![](https://secure2.wostatic.cn/static/bcVeJew5jbX5bF1rWJCeru/image.png?auth_key=1750484325-t8UwmAPnacR7iLFatbw4N5-0-34fcb0063763eb9a7e09a66e80285aac)
+![alt text](images/image-131.png)
 
 ## 你听过直接内存吗？
 
@@ -102,11 +102,11 @@ Java中的堆术语线程共享的区域。主要用来保存对象实例，数�
 
 以Java代码完成**文件拷贝**为例：
 
-![](https://secure2.wostatic.cn/static/tGDbRzpJKiTipRUKTn2Z65/image.png?auth_key=1750484325-6ARy5mRPUTrXVq7jofkwFL-0-5600809a20290450e6849cfbd04be345)
+![alt text](images/image-132.png)
 
 上面的方式需要两次拷贝数据，效率较低。
 
-![](https://secure2.wostatic.cn/static/5m4FMPMiMi8D2ccEhJqRH9/image.png?auth_key=1750484325-qh6uj4BbP8fbRiZKG1Nn5o-0-a2600e002a1d077991fd531425271dd4)
+![alt text](images/image-133.png)
 
 上面的方式使用了直接内存。直接内存是系统和Java都能访问的内存，节省了一半的拷贝时间。
 
@@ -130,7 +130,7 @@ Java中的堆术语线程共享的区域。主要用来保存对象实例，数�
 
 如果是**局部变量引用了对象**，并逃离方法的作用范围，**需要考虑**线程安全
 
-![](https://secure2.wostatic.cn/static/ixvDv5V7y6SwyKxy6b3DTV/image.png?auth_key=1750484325-snpRuTsJrPLji4fDmBnoAf-0-66c3223b73dda73320e1a16917b75a4c)
+![alt text](images/image-134.png)
 
 ## 能说一下堆栈的区别是什么吗？
 
@@ -148,7 +148,7 @@ Java中的堆术语线程共享的区域。主要用来保存对象实例，数�
 
 ## 什么是类加载器，类加载器有哪些?
 
-![](https://secure2.wostatic.cn/static/kfhJRtW7g8uDArTq6U8NsF/image.png?auth_key=1750484325-p58CGumvjfNKzpKVR8GHcQ-0-f07ee7d9704c0c1e39f8b0637109ce62)
+![alt text](images/image-135.png)
 
 **JVM**只会运行**二进制文件**，类加载器的作用就是将**字节码文件****加载**到JVM中，从而让Java程序能够启动起来。
 
@@ -171,7 +171,7 @@ Java中的堆术语线程共享的区域。主要用来保存对象实例，数�
 
 类从加载到虚拟机中开始，直到卸载为止，它的整个生命周期包括了：加载、验证、准备、解析、初始化、使用和卸载这**7个阶段**。其中，验证、准备和解析这三个部分统称为连接（linking）
 
-![](https://secure2.wostatic.cn/static/2DKfnA8rWJ9RFBZuUAcdP1/image.png?auth_key=1750484325-xTC6wR7JZ3sWnRUnRkRjf-0-1002daf819f83aff8c36bdc5a114a8f0)
+![alt text](images/image-136.png)
 
 - **加载：**
 
@@ -194,8 +194,8 @@ Java中的堆术语线程共享的区域。主要用来保存对象实例，数�
     - `static`变量，分配空间在**准备阶段完成**（设置默认值），赋值在初始化阶段完成
     - `static`变量是`final`的**基本类型**，以及字符串常量，值已确定，赋值在**准备阶段完成**
     - `static`变量是`final`的**引用类型**，那么赋值也会在**初始化阶段完成**
+        ![alt text](images/image-137.png)
 
-        ![](https://secure2.wostatic.cn/static/8LexYvr4aYQkXkqCBrSHAT/image.png?auth_key=1750484326-9WADZhUekRCCzUYP85i2Lz-0-f03a1d82048a4cf64ed5fa8c423ce524)
 - **解析：**
 
     把类中的符号引用转换为直接引用
@@ -225,7 +225,7 @@ Java中的堆术语线程共享的区域。主要用来保存对象实例，数�
 
 举例：
 
-![](https://secure2.wostatic.cn/static/9peCrF2xZaqG9o5rvXdqyn/image.png)
+![alt text](images/image-138.png)
 
 ## 简述Java垃圾回收机制？（GC是什么？为什么要GC）
 
@@ -254,21 +254,22 @@ delete ptr;
 
     只有所有 GC Roots 对象都不通过【强引用】引用该对象，该对象才能被垃圾回收。
 
-    ![](https://secure2.wostatic.cn/static/2maYLf1jp2o9YocJ8xbPSp/image.png)
+    ![alt text](images/image-139.png)
+
 - **软引用**
 
     软引用表示一个对象处于**有用且非必须**状态。
 
     仅有软引用引用该对象时，在垃圾回收后，**内存仍不足**时会再次出发垃圾回收。
 
-    ![](https://secure2.wostatic.cn/static/c56up91ffq1CK8AwAq5CTj/image.png)
+    ![alt text](images/image-140.png)
 - **弱引用**
 
     表示一个对象处于**可能有用且非必须**的状态。
 
     仅有弱引用引用该对象时，在垃圾回收时，无论内存是否充足，都会回收弱引用对象。
 
-    ![](https://secure2.wostatic.cn/static/sfrKsLmEe6vybH9YrW4xGd/image.png)
+    ![alt text](images/image-141.png)
 
     `ThreadLocal`内存泄漏问题就是这种情况.
 - **虚引用**
@@ -277,7 +278,7 @@ delete ptr;
 
     必须配合**引用队列**使用，被引用对象回收时，会将虚引用入队，由 **Reference Handler** 线程调用虚引用相关方法释放直接内存
 
-    ![](https://secure2.wostatic.cn/static/gNdpTPJMzDc5qCkbbAmGbV/image.png)
+    ![alt text](images/image-142.png)
 
 ## 对象什么时候可以被垃圾器回收
 
@@ -290,20 +291,20 @@ delete ptr;
 
     一个对象**被引用了一次**，在当前的对象头上**递增一次引用次数**，如果这个对象的**引用次数为0**，代表这个对象**可回收**
 
-    ![](https://secure2.wostatic.cn/static/5fL7WXxyoETGimM9HiWsHC/image.png)
+    ![alt text](images/image-143.png)
 
     存在问题，**可能引发内存泄漏**：
 
-    ![](https://secure2.wostatic.cn/static/q8NqeMLeuPHWkhVqSnLBBE/image.png)
+    ![alt text](images/image-144.png)
 
-    ![](https://secure2.wostatic.cn/static/wBKXL7cCSrTHVKiwymfym9/image.png)
+    ![alt text](images/image-145.png)
 - **可达性分析算法**
 
     Java 虚拟机中的垃圾回收器采用可达性分析来探索所有存活的对象
 
     扫描堆中的对象，看是否能够沿着**GCRoot 对象**为起点的**引用链**找到该对象，找不到，表示可以回收
 
-    ![](https://secure2.wostatic.cn/static/eoNhz1f8Bwr5PEqYwuoDqf/image.png)
+    ![alt text](images/image-146.png)
 
 ### 哪些对象可以作为 GC Root ?
 
@@ -320,10 +321,10 @@ delete ptr;
 
     - 1.根据可达性分析算法得出的垃圾进行标记
 
-        ![](https://secure2.wostatic.cn/static/dozMeYN3XDXNDx2YrpDGF9/image.png)
+        ![alt text](images/image-147.png)
     - **2.**对这些标记为可回收的内容进行垃圾回收
 
-        ![](https://secure2.wostatic.cn/static/jJMeya2ALV8u7mY1RmFkcV/image.png)
+        ![alt text](images/image-148.png)
 
     优点：标记和清除**速度较快**
 
@@ -332,10 +333,10 @@ delete ptr;
 
     优缺点同标记清除算法，解决了标记清除算法的碎片化的问题，同时，标记压缩算法多了一步，对象移动内存位置的步骤，其效率也有有一定的影响。
 
-    ![](https://secure2.wostatic.cn/static/e97Q3gQiBxzLzkY4Dqm62n/image.png)
+    ![alt text](images/image-149.png)
 - **复制算法**
 
-    ![](https://secure2.wostatic.cn/static/jFqxaLGkChhbHoCRKj1Hox/image.png)
+    ![alt text](images/image-150.png)
 
     优点：
 
@@ -354,7 +355,7 @@ delete ptr;
 
         **Eden区**，**幸存者区**survivor(分成from和to)【8：1：1】
 
-        ![](https://secure2.wostatic.cn/static/tHErzko74Nx4Xc4cJaTZgG/image.png)
+        ![alt text](images/image-151.png)
 
     **分代回收策略**
 
@@ -368,7 +369,7 @@ delete ptr;
 
     5.当幸存区对象熬过几次回收（最多**15次**），**晋升到老年代**（幸存区内存不足或大对象会提前晋升）
 
-    ![](https://secure2.wostatic.cn/static/8kg1xjzNNKEHH5X825v7xU/image.png)
+    ![alt text](images/image-152.png)
 
 ## MinorGC、 Mixed GC 、 FullGC的区别是什么
 
@@ -390,7 +391,7 @@ delete ptr;
 
     垃圾回收时，只有一个线程在工作，并且java应用中的**所有线程都要暂停（STW）**，等待垃圾回收的完成。
 
-    ![](https://secure2.wostatic.cn/static/8rJr88GkJjgXinCLif563B/image.png)
+    ![alt text](images/image-153.png)
 - **并行垃圾收集器(JDK8默认)**
 
     **Parallel New**和**Parallel Old**是一个并行垃圾回收器，JDK8默认使用此垃圾回收器
@@ -401,12 +402,12 @@ delete ptr;
 
     垃圾回收时，**多个线程在工作**，并且java应用中的**所有线程都要暂停（STW）**，等待垃圾回收的完成。
 
-    ![](https://secure2.wostatic.cn/static/pyE7ni9j9uszsvmeka8fiz/image.png)
+    ![alt text](images/image-154.png)
 - **CMS（并发）垃圾收集器**
 
     **CMS**全称 **Concurrent Mark Sweep**，是一款**并发的**、使用**标记-清除算法**的垃圾回收器，该回收器是**针对老年代**垃圾回收的，是一款以**获取最短回收停顿时间**为目标的收集器，停顿时间短，用户体验就好。其最大特点是在进行垃圾回收时，应用仍然能正常运行。
 
-    ![](https://secure2.wostatic.cn/static/hCpNWTX2SNyQR2HpbPwZWF/image.png)
+    ![alt text](images/image-155.png)
 - **G1垃圾收集器(JDK9默认)**
 
     划分成多个区域，每个区域都可以充当eden，survivor，old， humongous，其中 humongous 专为大对象准备
@@ -427,21 +428,21 @@ delete ptr;
 
         当伊甸园需要垃圾回收时，挑出一个空闲区域作为幸存区，用复制算法复制存活对象，需要暂停用户线程
 
-        ![](https://secure2.wostatic.cn/static/7LPuoFhaUD5qcuYVhVmPGk/image.png)
+        ![alt text](images/image-156.png)
 
         变化为
 
-        ![](https://secure2.wostatic.cn/static/oHLg7LHay2iNE6Y21VjpUy/image.png)
+        ![alt text](images/image-157.png)
 
         随着时间流逝，伊甸园的内存又有不足
 
         将**伊甸园**以及之前**幸存区**中的**存活对象**，采用**复制算法**，复制到**新的幸存区**，其中较老对象晋升至**老年代**
 
-        ![](https://secure2.wostatic.cn/static/vdafcTy9rBNHtUEFFpjnW/image.png)
+        ![alt text](images/image-158.png)
 
         变为
 
-        ![](https://secure2.wostatic.cn/static/t15cQESpBJ1PuECZ6CTxp6/image.png)
+        ![alt text](images/image-159.png)
     - **并发标记**
 
         当老年代占用内存超过**阈值**(默认是**45%**)后，触发**并发标记**，这时无需暂停用户线程
@@ -450,16 +451,16 @@ delete ptr;
 
         这些都完成后就知道了老年代有哪些**存活对象**，随后进入混合收集阶段。此时不会对所有老年代区域进行回收，而是根据暂停时间目标**优先回收价值高（存活对象少）的区域**（这也是GabageFirst 名称的由来）。
 
-        ![](https://secure2.wostatic.cn/static/qtBDrdCX4SU4e7zxoioSxM/image.png)
+        ![alt text](images/image-160.png)
     - **混合收集**
 
         进行回收
 
-        ![](https://secure2.wostatic.cn/static/4Y9i46K9t49CysekhSwSCv/image.png)
+        ![alt text](images/image-161.png)
 
         复制完成，内存得到释放。进入下一轮的新生代回收、并发标记、混合收集
 
-        ![](https://secure2.wostatic.cn/static/s1h5jNbeHXj8gb9sVPkkDW/image.png)
+        ![alt text](images/image-162.png)
 
 ## Minor GC、Major GC、Full GC是什么
 
@@ -478,16 +479,16 @@ delete ptr;
 
 ## JVM 调优的参数可以在哪里设置参数值？
 
-- **war包部署在****`tomcat`****中设置**
+- **war包部署在**`tomcat`**中设置**
 
     修改`TOMCAT_HOME/bin/catalina.sh`文件
 
-    ![](https://secure2.wostatic.cn/static/cRdQZqSAwh3pskEVKgLsNv/image.png)
+    ![alt text](images/image-163.png)
 - **jar包部署在启动参数设置**
 
     通常在linux系统下直接**加参数**启动springboot项目
 
-    ![](https://secure2.wostatic.cn/static/gD4m8HJALtgsXXvpBeUaLN/image.png)
+    ![alt text](images/image-164.png)
 
     `nohup`: 用于在系统后台不挂断地运行命令，退出终端不会影响程序的运行
 
@@ -501,7 +502,7 @@ delete ptr;
 
     设置**堆的初始大小**和**最大大小**，为了防止垃圾收集器在初始大小、最大大小之间收缩堆而产生额外的时间，通常把最大、初始大小设置为相同的值。
 
-    ![](https://secure2.wostatic.cn/static/pGbibwSJnsjiWYfm5zS86t/image.png)
+    ![alt text](images/image-165.png)
 
     堆空间设置多少合适？
 
@@ -511,20 +512,20 @@ delete ptr;
     - 设置参考推荐：尽量大，也要考察一下当前计算机其他程序的内存使用情况
 - **虚拟机栈的设置**
 
-    ![](https://secure2.wostatic.cn/static/jtZJnWnUr4CDsGMXJ6FTkN/image.png)
+    ![alt text](images/image-166.png)
 
     每个线程默认会开启1M的内存，用于存放栈帧、调用参数、局部变量等，但一般256K就够用。通常减少每个线程的堆栈，可以产生更多的线程，但这实际上还受限于操作系统。
 - **年轻代中Eden区和两个Survivor区的大小比例**
 
-    ![](https://secure2.wostatic.cn/static/54okdXNnhTBTsHoyUn339S/image.png)
+    ![alt text](images/image-167.png)
 - **年轻代晋升老年代阈值**
 
-    ![](https://secure2.wostatic.cn/static/59rzHMsDg7FiVfMLwEcigM/image.png)
+    ![alt text](images/image-168.png)
 - **设置垃圾回收收集器**
 
     通过增大吞吐量提高系统性能，可以通过设置并行垃圾回收收集器。
 
-    ![](https://secure2.wostatic.cn/static/otwFrDachNZm6K5GAsoixx/image.png)
+    ![alt text](images/image-169.png)
 
 ## 你们平时调试 JVM都用了哪些工具呢？
 
@@ -532,16 +533,15 @@ delete ptr;
 
 - **jps 进程状态信息**
 
-    ![](https://secure2.wostatic.cn/static/rjK98gq5cAfNnnMNRhM4pH/image.png)
+    ![alt text](images/image-170.png)
 - **jstack 查看java进程内线程的堆栈信息**
 
-    ![](https://secure2.wostatic.cn/static/f3zND4z7VuuV3ZsTqSLMd7/image.png)
+    ![alt text](images/image-171.png)
 
-    ![](https://secure2.wostatic.cn/static/tWBsHizMbsYbS3cFBkvLZ4/image.png)
-- **jmap 用于生成堆转内存快照、内存使用情况
-**
+    ![alt text](images/image-172.png)
+- **jmap 用于生成堆转内存快照、内存使用情况**
 
-    ![](https://secure2.wostatic.cn/static/3D1Li8ym6DZhuYWHadUmQX/image.png)
+    ![alt text](images/image-173.png)
 
     `format=b`表示以hprof二进制格式转储Java堆的内存
 
@@ -553,7 +553,7 @@ delete ptr;
 
     是JVM统计监测工具。可以用来显示垃圾回收信息、类加载信息、新生代统计信息等。
 
-    ![](https://secure2.wostatic.cn/static/hfLnhdFNPAeoGeLjpoT5LU/image.png)
+    ![alt text](images/image-174.png)
 
 **可视化工具**
 
@@ -570,45 +570,44 @@ delete ptr;
 
 ## 假如项目中产生了java内存泄露，你说一下你的排查思路？
 
-![](https://secure2.wostatic.cn/static/cTjM7EWiMZ6PBpuoB4pKwJ/image.png)
+![alt text](images/image-175.png)
 
 1. **获取堆内存快照dump**
 
     使用`jmap`命令获取运行中程序的`dump`文件
 
-    ![](https://secure2.wostatic.cn/static/vjwVabZ52SsrP4nR3nfXxt/image.png)
+    ![alt text](images/image-176.png)
 
     有的情况是内存溢出之后程序则会直接中断，而jmap只能打印在运行中的程序，所以建议**通过参数的方式**的生成dump文件
 
-    ![](https://secure2.wostatic.cn/static/ixqvzuasYgmkFEidrwUEnH/image.png)
+    ![alt text](images/image-177.png)
 2. **VisualVM去分析dump文件**
 
     文件-->装入--->选择dump文件即可查看堆快照信息
 
-    ![](https://secure2.wostatic.cn/static/5iyXYPgj7w5PhyHSahXWE/image.png)
+    ![alt text](images/image-178.png)
 3. **通过查看堆信息的情况，定位内存溢出问题**
-
-    ![](https://secure2.wostatic.cn/static/655KaHpR8DdsHet1BmwoPe/image.png)
+   
+    ![alt text](images/image-179.png)
 4. **找到对应的代码，通过阅读上下文的情况，进行修复即可**
 
 ## 服务器CPU持续飙高，你的排查方案与思路？
 
 1. **使用top命令查看占用cpu的情况**
 
-    ![](https://secure2.wostatic.cn/static/sDXCqa7wPN5siY6p4qQBN7/image.png)
-
-    ![](https://secure2.wostatic.cn/static/gYRfjoksPLNz4DrekehrhQ/image.png)
+    ![alt text](images/image-180.png)
+    ![alt text](images/image-181.png)
 2. **通过top命令查看后，可以查看是哪一个进程占用cpu较高，上图所示的进程为：40940**
 3. **查看进程中的线程信息**
 
-    ![](https://secure2.wostatic.cn/static/tmca6QbjEC2BQUECSuqcmR/image.png)
+    ![alt text](images/image-182.png)
 
-    ![](https://secure2.wostatic.cn/static/iovGf6ThzYtVR1SQpvPCnG/image.png)
+    ![alt text](images/image-183.png)
 
     通过以上分析，在进程40940中的线程40950占用cpu较高
 4. **可以根据线程 id 找到有问题的线程，进一步定位到问题代码的源码行号**
 
-    ![](https://secure2.wostatic.cn/static/w4wCZqvwj2n2ja5sdLUwvK/image.png)
+    ![alt text](images/image-184.png)
 
-    ![](https://secure2.wostatic.cn/static/ndGHASiyu8YigSRNgz6zRd/image.png)
+    ![alt text](images/image-185.png)
 

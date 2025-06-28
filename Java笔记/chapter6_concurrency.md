@@ -14,18 +14,21 @@
 
 ## 如果在java中创建线程有哪些方式？
 
-- **继承****`Thread`****类**
+- **继承**`Thread`**类**
 
-    ![](https://secure2.wostatic.cn/static/6eqj5UZibDHjsVTRK7CK91/image.png?auth_key=1750484173-ezXghP1aEUu6BNQXYL3EJs-0-3482bfd35a6eb1727aa247016542afb3)
-- **实现****`runnable`****接口**
+    ![alt text](images/image-99.png)
 
-    ![](https://secure2.wostatic.cn/static/6wYamiqREbeo7chK1M9Twy/image.png?auth_key=1750484173-x91UrPQ1ZPBBiJNqJPTRo5-0-038a97991430c493889c2838bbcb388d)
-- **实现****`Callable`****接口**
+- **实现**`runnable`**接口**
 
-    ![](https://secure2.wostatic.cn/static/hX9CMacpZ5JUngEwNgJDKD/image.png?auth_key=1750484173-tBpZtHvKmyToGC2K9CyWBU-0-f44af567bcfa187066d3ca46f16454da)
+    ![alt text](images/image-100.png)
+
+- **实现**`Callable`**接口**
+
+    ![alt text](images/image-101.png)
+
 - **线程池创建线程**
 
-    ![](https://secure2.wostatic.cn/static/xvCjhbwZiw7F8YbJoY11Ro/image.png?auth_key=1750484173-gZUEq4AJLG3PWpNuj5GbHi-0-72bf53ebc9d6a07981a8bb9ba6db1f48)
+    ![alt text](images/image-102.png)
 
     **通常情况下**，我们项目中都会采用**线程池**的方式创建线程。
 
@@ -41,7 +44,7 @@
 
 ## 线程包括哪些状态，状态之间是如何变化的？
 
-![](https://secure2.wostatic.cn/static/bUtQpgxER1bs6uYHaCBd1j/image.png?auth_key=1750484173-3mMpzpy7eJB4mxvpPhYLC-0-2f6ddbc01245e9a2265f52acc43e145d)
+![alt text](images/image-103.png)
 
 ## 线程中的 wait 和 sleep方法有什么不同呢？
 
@@ -64,7 +67,7 @@
 
 可以使用线程中的`join`方法解决
 
-![](https://secure2.wostatic.cn/static/8mcd7UVNycS8MGy37ddjPi/image.png?auth_key=1750484173-azY3JkGQLwGhpw1GkbKXYX-0-fdcd1a2f2c1d2b0a6f36fedaf3a65508)
+![alt text](images/image-104.png)
 
 ## 线程的 run()和 start()有什么区别？
 
@@ -103,9 +106,9 @@ monitor内部维护了三个变量
 
 在上锁的过程中，如果有其他线程也来抢锁，则进入`EntryList`进行阻塞，当获得锁的线程执行完了，释放了锁，就会唤醒`EntryList`中等待的线程竞争锁，竞争的时候是**非公平的**。
 
-![](https://secure2.wostatic.cn/static/sKEnQVbDF4jWKPrnf94HTv/image.png?auth_key=1750484173-82tgToXpe56HWYyqe1C29P-0-0e5be40f9921b08159a13852f9303131)
+![alt text](images/image-105.png)
 
-![](https://secure2.wostatic.cn/static/7TRtvAhJmeMFsYM3DWTDjs/image.png?auth_key=1750484173-hK1FtbQXY2N8eeTHD1Ka4i-0-ee30dd9613d2aca62219673021e2aeb0)
+![alt text](images/image-106.png)
 
 ## 关于synchronized 的锁升级的情况了解吗？
 
@@ -117,7 +120,7 @@ Java中的`synchronized`有偏向锁、轻量级锁、重量级锁三种形式�
 
 一旦锁发生了竞争，都会升级为重量级锁。
 
-![](https://secure2.wostatic.cn/static/8tRmJHruQmjXEAvE8AVTWP/image.png?auth_key=1750484173-uhSoHX417BdxCfFX7owH8V-0-3bb59120a338fbf3e64729704c59a326)
+![alt text](images/image-107.png)
 
 ## 说下ReentrantLock的使用方式和底层原理？
 
@@ -133,7 +136,7 @@ Java中的`synchronized`有偏向锁、轻量级锁、重量级锁三种形式�
 - 支持**多个条件变量**
 - 与synchronized一样，都**支持重入**
 
-![](https://secure2.wostatic.cn/static/kNZ56ZeBG9tedkJeuJctvA/image.png?auth_key=1750484173-erHCTEqaM2bPJ9D8tanDJm-0-848de86dcf44514cb1f56d9b1cf77b61)
+![alt text](images/image-108.png)
 
 `ReentrantLock`主要利用**CAS+AQS队列**来实现。它支持公平锁和非公平锁，两者的实现类似
 
@@ -141,7 +144,7 @@ Java中的`synchronized`有偏向锁、轻量级锁、重量级锁三种形式�
 
 公平锁的效率往往没有非公平锁的效率高，在许多线程访问的情况下，**公平锁表现出较低的吞吐量**。
 
-![](https://secure2.wostatic.cn/static/5kToLV4TWe9tWPdmToXxGo/image.png?auth_key=1750484173-4Q2REYPmd48jvop8jmvCXr-0-0de43c0e7c9c9972c891b68017da787b)
+![alt text](images/image-109.png)
 
 ## CAS和AQS，你能介绍一下吗？
 
@@ -168,13 +171,13 @@ head  指向队列中最久的一个元素
 
 其中我们刚刚聊的ReentrantLock底层的实现就是一个AQS。
 
-![](https://secure2.wostatic.cn/static/5yFZ2Vo9GkrV65sbSUyAWX/image.png?auth_key=1750484173-66Zjess9USDvsxmzz3boBR-0-98d5e6fae0242d0e9959955e05e7dfff)
+![alt text](images/image-110.png)
 
-![](https://secure2.wostatic.cn/static/2LngoPToSfUVgBjh3CHnp5/image.png?auth_key=1750484173-t975RJfxkKrgjk2pcv8SS8-0-c8aabe2bb269e89079f6c3333abf922c)
+![alt text](images/image-111.png)
 
 ## synchronized和Lock有什么区别 ?  
 
-![](https://secure2.wostatic.cn/static/nTHE8fceiDfaHCucwXpVZY/image.png)
+![alt text](images/image-112.png)
 
 主要有三个方面不太一样
 
@@ -198,7 +201,7 @@ head  指向队列中最久的一个元素
 - JMM把内存分为两块，一块是私有线程的工作区域（**工作内存**），一块是所有线程的共享区域（**主内存**）
 - 线程跟线程之间是相互隔离，线程跟线程交互需要通过主内存
 
-![](https://secure2.wostatic.cn/static/jka4udxsusbZrEF861P9xa/image.png)
+![alt text](images/image-113.png)
 
 ## 死锁产生的条件是什么？
 
@@ -222,7 +225,7 @@ t2 线程获得B对象锁，接下来想获取A对象的锁
 - 然后通过**jstack**来查看这个**进程id**，就能展示出来死锁的问题，并且，可以定
 位代码的具体行号范围，我们再去找到对应的代码进行排查就行了。
 
-![](https://secure2.wostatic.cn/static/upAw1TosBKYkMpeutahpWk/image.png)
+![alt text](images/image-114.png)
 
 ## 请谈谈你对 volatile 的理解
 
@@ -230,10 +233,11 @@ t2 线程获得B对象锁，接下来想获取A对象的锁
 
 - **保证**了不同线程对这个变量进行操作时的**可见性**，即一个线程修改了某个变量的值，这新值对其他线程来说是立即可见的,volatile关键字会强制将修改的值立即写入主存。
 
-    ![](https://secure2.wostatic.cn/static/4Sek5VokiNZVNgyPckNG6c/image.png)
+    ![alt text](images/image-115.png)
+
 - **禁止**进行指令**重排序**，可以保证代码执行有序性。底层实现原理是，添加了一个**内存屏障**，通过插入内存屏障禁止在内存屏障前后的指令执行重排序优化
 
-    ![](https://secure2.wostatic.cn/static/9ptSxkVVsiWw924TZeRF54/image.png)
+    ![alt text](images/image-116.png)
 
 ## 你能聊一下ConcurrentHashMap的原理吗？
 
@@ -243,10 +247,11 @@ t2 线程获得B对象锁，接下来想获取A对象的锁
 
 - **JDK1.7**底层采用**分段的数组+链表**实现
 
-    ![](https://secure2.wostatic.cn/static/8JFoS9nMRqRprivNpKcY9B/image.png)
-- **JDK1.8 **采用的数据结构跟HashMap1.8的结构一样，数组+链表/红黑二叉树。
+    ![alt text](images/image-117.png)
 
-    ![](https://secure2.wostatic.cn/static/ksV3H4U4M7ApCSM13wJbjw/image.png)
+- **JDK1.8**采用的数据结构跟HashMap1.8的结构一样，数组+链表/红黑二叉树。
+
+    ![alt text](images/image-118.png)
 
 ## 线程池的种类有哪些？
 
@@ -296,8 +301,7 @@ t2 线程获得B对象锁，接下来想获取A对象的锁
     - **LinkedBlockingQueue**：基于**链表**结构的有界阻塞队列，FIFO。
     - **DelayedWorkQueue **：是一个**优先级**队列，它可以保证每次出队的任务都是当前队列中执行时间最靠前的
     - **SynchronousQueue**：不存储元素的阻塞队列，每个插入操作都必须等待一个移出操作。
-
-        ![](https://secure2.wostatic.cn/static/mnpqseYEj4TUGxmVwtJmUA/image.png)
+        ![alt text](images/image-119.png)
 - `threadFactory`
 
     线程工厂 - 可以定制线程对象的创建，例如设置线程名字、是否是守护线程等
@@ -319,11 +323,11 @@ t2 线程获得B对象锁，接下来想获取A对象的锁
 
     一般来说：计算型代码、Bitmap转换、Gson转换等
 
-![](https://secure2.wostatic.cn/static/ttaJoYvhDYP659fzz5jeev/image.png)
+![alt text](images/image-120.png)
 
 ## 线程池的执行原理知道吗？
 
-![](https://secure2.wostatic.cn/static/oi7V3r2PaNDy3S8gW6HeXL/image.png)
+![alt text](images/image-121.png)
 
 ## 为什么不建议使用Executors创建线程池呢？
 
@@ -342,7 +346,7 @@ t2 线程获得B对象锁，接下来想获取A对象的锁
 
 通常用于那些资源有明确访问数量限制的场景，常用于限流。
 
-![](https://secure2.wostatic.cn/static/ueha66hnnEYvynx36Wxmt3/image.png)
+![alt text](images/image-122.png)
 
 ## 那该如何保证Java程序在多线程的情况下执行安全呢？
 
@@ -362,7 +366,7 @@ t2 线程获得B对象锁，接下来想获取A对象的锁
 
 案例：使用JDBC操作数据库时，会将每一个线程的Connection放入各自的ThreadLocal中，从而保证每个线程都在各自的 Connection 上进行数据库的操作，避免A线程关闭了B线程的连接。
 
-![](https://secure2.wostatic.cn/static/ogRZU7rL4DZzH2o9ECEhqC/image.png)
+![alt text](images/image-123.png)
 
 ## 那你知道ThreadLocal的底层原理实现吗？
 
@@ -379,4 +383,4 @@ t2 线程获得B对象锁，接下来想获取A对象的锁
 
 在使用`ThreadLocal`时都把它作为静态变量（即强引用），因此无法被动依靠 GC 回收，建议主动的`remove`释放 key，这样就能避免内存溢出
 
-![](https://secure2.wostatic.cn/static/qa8vMPxo5nsAoVo99Z54PV/image.png)
+![alt text](images/image-124.png)

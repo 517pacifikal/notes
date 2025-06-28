@@ -27,13 +27,13 @@ AOP称为**面向切面编程**，用于将那些**与业务无关**，但却对
 - 缓存处理
 - Spring中内置的事务处理
 
-![](https://secure2.wostatic.cn/static/cGycUGQ4evmYwqUkShEVYP/image.png?auth_key=1750483821-kqZB18amjjUVpc5SYeQMPz-0-3861e99e536e8e921a5240a7319ccf5a)
+![alt text](images/image-64.png)
 
 ## Spring中的事务是如何实现的
 
 spring实现的事务本质就是**aop完成**，对方法前后进行拦截，在执行方法之前开启事务，在执行完目标方法之后根据执行情况提交或者回滚事务。
 
-![](https://secure2.wostatic.cn/static/iQyXdd4JCHpn6etoqVuAtF/image.png?auth_key=1750483821-2tSJNEftpBnCC6aH3bCYsQ-0-956149b7e2b9b92cdf2a5a6b66ff71c5)
+![alt text](images/image-65.png)
 
 ## Spring中事务失效的场景有哪些
 
@@ -41,19 +41,22 @@ spring实现的事务本质就是**aop完成**，对方法前后进行拦截，�
 
     事务通知只有捉到了**目标抛出的异常**，才能进行后续的回滚处理，如果目标自己处理掉异常，事务通知无法知悉
 
-    ![](https://secure2.wostatic.cn/static/gCkQn4jYoRLhsD5EVP9cdq/image.png?auth_key=1750483821-bNkGMDLecK3ArJ49zPwtDh-0-5dc8bd6d1c3989d54ea045fef9b4f9ec)
+    ![alt text](images/image-66.png)
+
 - 抛出**检查异常**，配置`rollbackFor`属性为`Exception`
 
     Spring 默认只会回滚**非检查异常**
 
-    ![](https://secure2.wostatic.cn/static/4H7qzEKxzydGEFjVwxdrTc/image.png?auth_key=1750483821-xrsuaygsZfXc74sTVB62C9-0-0c11bd8a74010b5cee4af00b0ab904e8)
+    ![alt text](images/image-67.png)
 
     应该修改注解：
 
-    ![](https://secure2.wostatic.cn/static/oGrycsW2UPsqfeXjTqqM81/image.png?auth_key=1750483821-sQsomGQ8esBEfXnaPRkouu-0-b0561db399c8d11d930e4d0507967351)
+    ![alt text](images/image-68.png)
+
 - 非public方法导致的事务失效，改为public
 
-    ![](https://secure2.wostatic.cn/static/n1xGXJJMncYTLExkgv4o1b/image.png?auth_key=1750483821-9TzxgbSpBTs5yCEMtTxUZp-0-8d6f720a205f8856cc187ec850308248)
+    ![alt text](images/image-69.png)
+
 - 事务方法中调用另一个事务方法(参考**黑马点评**)
 
     使用`AopContext.currentProxy()`获取当前方法的代理方法，通过代理方法调用。
@@ -73,17 +76,17 @@ spring实现的事务本质就是**aop完成**，对方法前后进行拦截，�
 - Bean的**后置处理器BeanPostProcessor-后置**
 - **销毁**bean
 
-![](https://secure2.wostatic.cn/static/5oQ6rjjJwSXADzjQPykUGp/image.png?auth_key=1750483821-3UXVYEwVgkaJFgHyQ6e9m9-0-967082a07556f828a0702af57ffd57cf)
+![alt text](images/image-70.png)
 
 ## Spring中的循环引用
 
 循环依赖：循环依赖其实就是循环引用,也就是两个或两个以上的bean互相持有对方,最终形成闭环。比如A依赖于B,B依赖于A
 
-![](https://secure2.wostatic.cn/static/i791EBzGyNsLgcgUTByJss/image.png?auth_key=1750483821-8REH5oEuaJpby8ot3hG4nc-0-58c126b687d651788ed7fafcfcd4f93c)
+![alt text](images/image-71.png)
 
 Spring解决循环依赖是通过**三级缓存**，对应的三级缓存如下所示：
 
-![](https://secure2.wostatic.cn/static/s89cDza5RBghWsGuFEq2d/image.png?auth_key=1750483821-rCA2NizYA3mUHs875APf8Q-0-9890fe194cda31ff9d7a1ce9271c242a)
+![alt text](images/image-72.png)
 
 循环依赖在spring中是允许存在，spring框架依据三级缓存已经解决了大部分的循环依赖
 
@@ -106,7 +109,7 @@ Spring解决循环依赖是通过**三级缓存**，对应的三级缓存如下�
 
 由于bean的生命周期中构造函数是**第一个执行**的，spring框架并不能解决构造函数的的依赖注入，可以使用`@Lazy`**懒加载**，什么时候需要对象再进行bean对象的创建
 
-![](https://secure2.wostatic.cn/static/n966xtL5MStDDQ3C9eVwAh/image.png?auth_key=1750483821-613kPnVrTXyyY4sTbJPaak-0-b5a90d5bdf3c62f056bcb92cf53da0c1)
+![alt text](images/image-73.png)
 
 ## SpringMVC的执行流程知道嘛
 
@@ -122,7 +125,7 @@ Spring解决循环依赖是通过**三级缓存**，对应的三级缓存如下�
 - 方法上添加了`@ResponseBody`
 - 通过**HttpMessageConverter**来**返回结果**转换为JSON并响应
 
-![](https://secure2.wostatic.cn/static/5TrRFzUFeydhJdFC8vkdj2/image.png?auth_key=1750483821-3pBvibWL2AZEnmWzCVgK9P-0-8d9d329c51c356b6834c8d2b8c790c17)
+![alt text](images/image-74.png)
 
 ## Springboot自动配置原理
 
@@ -140,25 +143,25 @@ Spring解决循环依赖是通过**三级缓存**，对应的三级缓存如下�
 
 3, 条件判断会有像`@ConditionalOnClass`这样的注解，判断是否有对应的**class文件**，如果有则加载该类，把这个配置类的所有的Bean放入spring容器中使用。
 
-![](https://secure2.wostatic.cn/static/6xTmm9j5k37nN6tM3wLmvX/image.png?auth_key=1750483821-sg2Rr5PxZSVmaxDp34uuph-0-cb43a29d6290ae569950e64114412c90)
+![alt text](images/image-75.png)
 
 ## Spring/SpringMVC/SpringBoot常见注解
 
 ### Spring 的常见注解有哪些
 
-![](https://secure2.wostatic.cn/static/cG216QBEeRHUizzM9qW67j/image.png?auth_key=1750483821-p9Mrk17A48ZT6KN5CScHbx-0-a7eca357a10401dc1fcea225a44f7d52)
+![alt text](images/image-76.png)
 
 ### SpringMVC常见的注解有哪些
 
-![](https://secure2.wostatic.cn/static/j6aXVmwZBe5LpHDwRPqTJ5/image.png?auth_key=1750483821-v3JjyNxY9kZTx9f7HyGwpd-0-8a91788d410eae59519de9398602626c)
+![alt text](images/image-77.png)
 
 ### Springboot常见注解有哪些
 
-![](https://secure2.wostatic.cn/static/s8RrqZ3Gu5GM8hmjJMQGvS/image.png?auth_key=1750483821-eQXzes8zuUWABGaYycerxZ-0-3923da2b2d0723ee40f6f8d49624b540)
+![alt text](images/image-78.png)
 
 ## MyBatis执行流程
 
-![](https://secure2.wostatic.cn/static/wJcBhwKARYuhLKER9yWEtM/image.png?auth_key=1750483821-jLRNdLQo3KBpsi9v9sVPcf-0-2eec21d65c236cf0424a6c471f531f71)
+![alt text](images/image-79.png)
 
 - 读取MyBatis配置文件：`mybatis-config.xml`加载运行环境和映射文件
 - 构造会话工厂**SqlSessionFactory**，一个项目只需要一个，单例的，一般由spring进行管理
@@ -179,7 +182,7 @@ Mybatis支持一对一关联对象和一对多关联集合对象的
 
 延迟加载在Mybatis**配置文件**中，可以配置是否启用延迟加载`lazyLoadingEnabled=true|false`，默认是关闭的
 
-![](https://secure2.wostatic.cn/static/uD5E5QinLkVrM5i3BzMsb8/image.png)
+![alt text](images/image-80.png)
 
 ## 延迟加载的底层原理知道吗？
 
@@ -187,7 +190,7 @@ Mybatis支持一对一关联对象和一对多关联集合对象的
 2. 当调用目标方法`user.getOrderList()`时，进入**拦截器invoke方法**，发现`user.getOrderList()`是null值，执行sql查询order列表
 3. 把order查询上来，然后调用`user.setOrderList(List<Order>orderList) `，接着完成user.getOrderList()方法的调用
 
-![](https://secure2.wostatic.cn/static/wR3w3zFBMT8nrKybDgnnhV/image.png)
+![alt text](images/image-81.png)
 
 ## Mybatis的一级、二级缓存用过吗？
 
@@ -195,16 +198,17 @@ Mybatis支持一对一关联对象和一对多关联集合对象的
 
     基于 PerpetualCache 的 HashMap本地缓存，其存储作用域为Session，当Session进行flush或close之后，该Session中的所有Cache就将清空，默认打开一级缓存
 
-    ![](https://secure2.wostatic.cn/static/dQFk98QQvvNiEBKhvxFVkY/image.png)
+    ![alt text](images/image-82.png)
 
-    ![](https://secure2.wostatic.cn/static/8hnKqrMvkFrynU2qJjJjdV/image.png)
+    ![alt text](images/image-83.png)
+
 - **二级缓存**
 
     是基于**namespace**和**mapper**的作用域起作用的，不是依赖于SQLsession，默认也是采用PerpetualCache，HashMap存储。
 
     **需要单独开启**，一个是核心配置，一个是mapper映射文件
 
-    ![](https://secure2.wostatic.cn/static/a3STXgyibkqT1qQBiZdotU/image.png)
+    ![alt text](images/image-84.png)
 
 ## Mybatis的二级缓存什么时候会清理缓存中的数据
 

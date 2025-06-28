@@ -4,7 +4,7 @@
 
 以咖啡店点餐系统为例，其基础设计结构如下：
 
-![](https://secure2.wostatic.cn/static/q3GMirnqpWjimRNHY9jmXL/image.png?auth_key=1750484352-bTbEUa6f2N5SNECt5TFNTo-0-8e491452d033e918d1205aef36d5ddb5)
+![alt text](images/image-186.png)
 
 其中，
 
@@ -25,17 +25,17 @@
 
 改进后如下：
 
-![](https://secure2.wostatic.cn/static/3DRUBDmMzcsFfThQBdVtZn/image.png?auth_key=1750484352-mGSRQQZxGPwiPeGR63uR7E-0-b35759084934c67303c63d619c46cadb)
+![alt text](images/image-187.png)
 
 工厂类：
 
-![](https://secure2.wostatic.cn/static/vZcHGQFGHjmL8GJ8NKDMhS/image.png?auth_key=1750484352-c4Sn4i1UerQmsnV8jMMtwf-0-8c71dfefe336bd57186393133b29c43b)
+![alt text](images/image-188.png)
 
 增加新产品时还是需要修改工厂类的代码，**违背了“开闭原则”**。
 
 咖啡店类：
 
-![](https://secure2.wostatic.cn/static/fTnswaYVVnBuhq8BPyvseL/image.png?auth_key=1750484352-bE3rNeaKPNuPwPw7GpzcQG-0-ede8e5676e449f126e4816c1155c9435)
+![alt text](images/image-189.png)
 
 ### 工厂方法模式
 
@@ -59,23 +59,22 @@
 
     实现了抽象产品角色所定义的接口，由具体工厂来创建，它同具体工厂之间一一对应。
 
-![](https://secure2.wostatic.cn/static/pni4M6Nq3fUJShLg6dRWFm/image.png?auth_key=1750484352-nMuJZu4HEdLZejrpnehsgA-0-37061fe7db9b600a278e27856ff51810)
+![alt text](images/image-190.png)
 
-![](https://secure2.wostatic.cn/static/63Tcb98gC7tkgFeNh5qwJA/image.png?auth_key=1750484352-vhFzYjjAz2F8mhzC5biSc6-0-3afa271ad6fe960891add014b06e139c)
-
+![alt text](images/image-191.png)
 
 
 抽象工厂：
 
-![](https://secure2.wostatic.cn/static/9PbnMpLPtduanGtyR2Kcik/image.png?auth_key=1750484352-ooU6C1tAenFTnRFpHSvz87-0-d8e205d5511fc5b07e3d1537efda565d)
+![alt text](images/image-192.png)
 
 具体工厂：
 
-![](https://secure2.wostatic.cn/static/fhu2qEbmPtBe1KRP3mfZrE/image.png?auth_key=1750484352-ac7HGHTgzmAkuDcGzQdX1N-0-987192c0b2b29378182db447395b553c)
+![alt text](images/image-193.png)
 
 咖啡店类：
 
-![](https://secure2.wostatic.cn/static/JHnFgxhnq8wVtMp5w9Z3S/image.png?auth_key=1750484352-q879DrGcxgvMD6t33ExgMu-0-ac8e92777cb1dc941269e8196520dc61)
+![alt text](images/image-194.png)
 
 通过咖啡店中传入不同的抽象工厂，产生不同的咖啡类型。
 
@@ -96,7 +95,7 @@
 抽象工厂模式将考虑多等级产品的生产，将同一个具体工厂所生产的位于不同等级的一组产品称为一个产品族，下图所示
 
 
-![](https://secure2.wostatic.cn/static/fb7GuwP5bixWKCbToNRXK/image.png?auth_key=1750484352-b1epikBooDzjnvGgRRqwN2-0-974547e97a31d8630dfcd39826124e8b)
+![alt text](images/image-195.png)
 
 - **产品族：**一个品牌下面的所有产品；例如华为下面的电脑、手机称为华为的产品族；
 - **产品等级：**多个品牌下面的同种产品；例如华为和小米都有手机电脑为一个
@@ -140,13 +139,11 @@
 
 所以这个案例可以使用抽象工厂模式实现。类图如下：
 
-![](https://secure2.wostatic.cn/static/shbDMr6m6Vhsn2sRt3HPEW/image.png?auth_key=1750484352-2rNcUZCYdvEJ7am9ScHcFm-0-f90a4b3ddbcf57a89245e89a0094157d)
+![alt text](images/image-196.png)
 
 调用思路：
 
-
-
-![](https://secure2.wostatic.cn/static/uAAhddBAMB1fepPSE66Hsi/image.png?auth_key=1750484352-oJcDuroxeTnGVLdHQKfYby-0-1d6d2a89fc0c17ca73a429cd12eedf2e)
+![alt text](images/image-197.png)
 
 - **优点：**
 
@@ -161,7 +158,7 @@
 
 同样是出行，有多种方式可以选择：
 
-![](https://secure2.wostatic.cn/static/iMjua8xPnxFPYtMHfXd47e/image.png?auth_key=1750484352-awt7cYx69Vtxp1aRE5vHrb-0-43fd523d66ccb185af860daec6826ee3)
+![alt text](images/image-198.png)
 
 该模式定义了一系列算法，并将每个算法封装起来，使它们可以**相互替换**，且算法的变化不会影响使用算法的客户。
 
@@ -187,21 +184,21 @@
 
 一家百货公司在定年度的促销活动。针对不同的节日（春节、中秋节、圣诞节）推出不同的促销活动，由促销员将促销活动展示给客户。类图如下：
 
-![](https://secure2.wostatic.cn/static/q3J7T1ugti6JWnBzn5DDQg/image.png?auth_key=1750484352-sDdKcafjrP8Fu36uDaxDXB-0-646296f971523d035f10f415850fc1ec)
+![alt text](images/image-199.png)
 
 
 
 定义百货公司所有促销活动的共同接口
 
-![](https://secure2.wostatic.cn/static/7npS9FF9DT9H1iiwJgigQU/image.png?auth_key=1750484352-hNsCBvnA9JD8VKLagELUbE-0-23c1e394e7c4c3d913c5ce95056901d0)
+![alt text](images/image-200.png)
 
 定义具体策略角色（Concrete Strategy）：每个节日具体的促销活动：
 
-![](https://secure2.wostatic.cn/static/xz1frJ7WfBJe5BrAy2SkAy/image.png?auth_key=1750484353-9AoUKQTuBjff98XncnT3vr-0-fe9ffd38db235df5f5f092017b2e7750)
+![alt text](images/image-201.png)
 
 定义环境角色（Context）：用于连接上下文，即把促销活动推销给客户，这里可以理解为销售员
 
-![](https://secure2.wostatic.cn/static/anBzaM2PYPQgLjRFQ9X7Rb/image.png)
+![alt text](images/image-202.png)
 
 案例：多种方式可以进行登录
 
@@ -219,10 +216,9 @@
 
 比较常见的springmvc中的**拦截器**，web开发中的**filter过滤器**
 
-![](https://secure2.wostatic.cn/static/aKkWfKWcifNaYCud8xdFvd/image.png)
+![alt text](images/image-203.png)
 
-**结构
-**
+**结构**
 
 职责链模式主要包含以下角色:
 
@@ -240,29 +236,28 @@
 
 **案例**
 
-![](https://secure2.wostatic.cn/static/eL6UkhSyz79CKkraFXKf8p/image.png)
+![alt text](images/image-204.png)
 
 抽象处理者
 
-![](https://secure2.wostatic.cn/static/9tWFMhUcLjYh6aBzUNpZBk/image.png)
+![alt text](images/image-205.png)
 
 订单信息类：
 
-![](https://secure2.wostatic.cn/static/6uKNhFxtrj1kdJ1xMzvJM5/image.png)
+![alt text](images/image-206.png)
 
-![](https://secure2.wostatic.cn/static/h8kt41gWGRV1ppSWfypD3Y/image.png)
+![alt text](images/image-207.png)
 
 具体处理者：
 
-![](https://secure2.wostatic.cn/static/rQPTaUgKQzuP1HLcjnmmny/image.png)
+![alt text](images/image-208.png)
 
-![](https://secure2.wostatic.cn/static/eBGXZcsC3rPZL4bdyDm4jr/image.png)
-
+![alt text](images/image-209.png)
 客户类：
 
-![](https://secure2.wostatic.cn/static/wG9X7Ua6MGyywGdnP8vMUP/image.png)
+![alt text](images/image-210.png)
 
-![](https://secure2.wostatic.cn/static/gZkbSGSenDtA3EsK5eeKCN/image.png)
+![alt text](images/image-211.png)
 
 **优缺点**
 

@@ -4,7 +4,7 @@
 
 ### 可能丢失消息的位置
 
-![](https://secure2.wostatic.cn/static/jt91y5b1gCRJ7QDAjQZDCG/image.png?auth_key=1750483932-dmpGWzz6u1xmS6rCjRBdCn-0-89a24c76106679be74805c0c0c52ad61)
+![alt text](images/image-85.png)
 
 ### 解决方案
 
@@ -21,7 +21,8 @@
 
     MQ默认是内存存储消息，开启持久化功能可以确保缓存在MQ中的消息不丢失。
 
-    ![](https://secure2.wostatic.cn/static/etUJ4kueGv3hvSGp5pcEgb/image.png?auth_key=1750483932-3G7sjLJX2zXmxxcT2XSVD8-0-4aca0a21f621393a2ba42af4f1661481)
+    ![alt text](images/image-86.png)
+
 - **消费者确认机制**
 
     RabbitMQ支持**消费者确认机制**，即：消费者处理消息后可以向MQ发送**ack回执**，MQ收到ack回执后才会删除该消息。而SpringAMQP则允许配置三种确认模式：
@@ -39,7 +40,7 @@
     消息发送失败后：
 我们可以利用Spring的**retry机制**，在消费者出现异常时利用本地重试，设置重试次数，当次数达到了以后，如果消息依然失败，将消息投递到**异常交换机**，交由人工处理
 
-    ![](https://secure2.wostatic.cn/static/seC1Z4ZoM2GQKDZgcVsrTe/image.png?auth_key=1750483932-uLrRUm6c6J43XyNSJdcHvx-0-1821bb6fdd42a32d821357606938ada4)
+    ![alt text](images/image-87.png)
 
 ## RabbitMQ消息的重复消费问题如何解决的
 
@@ -52,7 +53,7 @@
 
 使用业务的**唯一标识**，我们再处理消息时，先到数据库查询一下，这个数据是否存在，如果不存在，说明没有处理过，这个时候就可以正常处理这个消息了。如果已经存在这个数据了，就说明消息重复消费了，我们就不需要再消费了
 
-![](https://secure2.wostatic.cn/static/mUpoFcnB1SeNfaGN2BJY6V/image.png?auth_key=1750483932-5H5LnDyrPa7gMvBPdF5fzw-0-8bff15ac52747a6ff2e42a8e4716ede6)
+![alt text](images/image-88.png)
 
 ## RabbitMQ中死信交换机 ? （RabbitMQ延迟队列有了解过嘛）
 
@@ -64,11 +65,11 @@
 
 如果消息超时未消费就会变成死信，在RabbitMQ中如果消息成为死信，队列可以绑定一个死信交换机，在死信交换机上可以绑定其他队列，在我们发消息的时候可以按照需求指定TTL的时间，这样就实现了延迟队列的功能了。
 
-![](https://secure2.wostatic.cn/static/6L3WxaNkwhKGGeJx4EdvN3/image.png?auth_key=1750483932-v9LEHKUa8TPiiuwQgs22Dk-0-408ae11925b91d7727c523a15809a0e6)
+![alt text](images/image-89.png)
 
 我记得RabbitMQ还有一种方式可以实现延迟队列，在RabbitMQ中安装一个**死信插件**，这样更方便一些，我们只需要在声明交互机的时候，指定这个就是死信交换机，然后在发送消息的时候直接指定超时时间就行了，相对于死信交换机+TTL要省略了一些步骤
 
-![](https://secure2.wostatic.cn/static/q6gjPACWeR16jPKQ9Wfdz3/image.png?auth_key=1750483933-qChnjxMv7p134D7B2vtjp7-0-b3dc5de3d4ccc7321fd6113de3d1a300)
+![alt text](images/image-90.png)
 
 ## 如果有100万消息堆积在MQ , 如何解决 ?
 
@@ -98,7 +99,8 @@
     - 当访问集群某节点时，如果队列不在该节点，会从数据所在节点**传递到当前节点**并返回
     - 队列所在节点宕机，队列中的消息就会丢失
 
-    ![](https://secure2.wostatic.cn/static/3Vp1aDy3fZ95qdgrPyV29r/image.png?auth_key=1750483933-2Y8C9hmyobwwt7kyy6mZRK-0-930250df0b744fe4e802c7c63c407198)
+    ![alt text](images/image-91.png)
+    
 - **镜像集群**
 
     本质是**主从模式**，具备下面的特征：

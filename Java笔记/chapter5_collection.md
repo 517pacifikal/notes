@@ -2,7 +2,7 @@
 
 ## 说一说Java提供的常见集合？（画一下集合结构图）
 
-![](https://secure2.wostatic.cn/static/qCiAN2fG9wTCKniGxPYwgH/image.png?auth_key=1750484075-gejvCdXWMsREASNXUHxq9j-0-8a1cad84ae9f48a139e53bd12b8f6a12)
+![alt text](images/image-92.png)
 
 在java中提供了量大类的集合框架，主要分为两类：
 
@@ -41,7 +41,7 @@
 - 数组转List，使用JDK中`java.util.Arrays`工具类的`asList`方法
 - List转数组，使用List的`toArray`方法。无参`toArray`方法返回 `Object`数组，传入初始化长度的数组对象，返回该对象数组
 
-![](https://secure2.wostatic.cn/static/iZdoin8i7UGzhXs7xebJ32/image.png?auth_key=1750484075-2Vn4XeAAxM8FpwScrcMeNW-0-c38010f31ac7c016f41f3fc6a48b3708)
+![alt text](images/image-93.png)
 
 `Arrays.asList`转换`list`之后，如果修改了数组的内容，list**会受影响**，因为它的底层使用的Arrays类中的一个内部类ArrayList来构造的集合，在这个集合的构造器中，把我们传入的这个集合进行了包装而已，最终指向的都是同一个内存地址。
 
@@ -67,11 +67,11 @@ list用了`toArray`转数组后，如果修改了list内容，数组**不会影�
     - 在方法内使用，**局部变量则是线程安全的**
     - 使用线程安全的ArrayList和LinkedList
 
-        ![](https://secure2.wostatic.cn/static/hWLaQg3sxUZN6HYuGxR3RV/image.png?auth_key=1750484075-7ANqMX273U3ePktodcPZZe-0-7f50aa2087e480b707d67670b0ba0796)
+        ![alt text](images/image-94.png)
 
 ## 说一下HashMap的实现原理？
 
-![](https://secure2.wostatic.cn/static/ptcpdPzy3pcTQ3GmDNMwmw/image.png?auth_key=1750484075-bYn7YV5b6wmQdidJjeSK5S-0-b879ebfff348207effff0cc267983028)
+![alt text](images/image-95.png)
 
 HashMap的数据结构： 底层使用hash表数据结构，即数组和链表或红黑树
 
@@ -91,12 +91,12 @@ jdk1.8在解决哈希冲突时有了较大的变化，当链表长度大于阈�
 
 ## 好的，你能说下HashMap的put方法的具体流程吗？
 
-![](https://secure2.wostatic.cn/static/4vaLoCH22gPaTDw5ukhjzH/image.png?auth_key=1750484075-2XVcGJaqnLczDriHmsEBFM-0-c1351681996210aaed113c13226667f8)
+![alt text](images/image-96.png)
 
 ## 好的，刚才你多次介绍了hashmap的扩容，能讲一讲HashMap的扩
 容机制吗？
 
-![](https://secure2.wostatic.cn/static/hp4nEVPFCvZ22EVNJDPqgd/image.png?auth_key=1750484075-kZibpwiyhoPiZS771pNXLY-0-973a67523bd6a2cc67f5587ab171732e)
+![alt text](images/image-97.png)
 
 - 在添加元素或初始化的时候需要调用`resize`方法进行扩容，第一次添加数据初始化数组长度为**16**，以后每次每次扩容都是达到了扩容**阈值**（数组长度 * 0.75）
 - 每次扩容的时候，都是扩容之前容量的**2倍**； 
@@ -105,14 +105,14 @@ jdk1.8在解决哈希冲突时有了较大的变化，当链表长度大于阈�
 - **没有hash冲突**的节点，则直接使用 `e.hash & (newCap - 1)` 计算新数组的索引位置
 - 如果是红黑树，走红黑树的添加
 
-- 如果是链表，则需要遍历链表，可能需要拆分链表，判断**`(e.hash & oldCap)`****是否为0**，该元素的位置要么停留在原始位置，要么移动到原始位置+增加的数组大小这个位置上
+- 如果是链表，则需要遍历链表，可能需要拆分链表，判断`(e.hash & oldCap)`**是否为0**，该元素的位置要么停留在原始位置，要么移动到原始位置+增加的数组大小这个位置上
 
 ## 通过hash计算后找到数组的下标，是如何找到的呢，你了解hashMap的寻址算法吗？
 
 这个哈希方法首先计算出`key`的`hashCode`值，然后通过这个hash值**右移16位**
 后的二进制进行**按位异或**运算得到最后的`hash`值。
 
-![](https://secure2.wostatic.cn/static/sB3c3FtzRpRqQsuGeWimBZ/image.png?auth_key=1750484075-qsuZwjXmnY3198DHGzAgSA-0-990bcb787c144d1ca370d97d154e3479)
+![alt text](images/image-98.png)
 
 ## 为何HashMap的数组长度一定是2的次幂？
 

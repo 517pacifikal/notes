@@ -19,11 +19,11 @@
 
     如果要开启慢查询日志，需要在MySQL的配置文件（`/etc/my.cnf`）中配置如下信息：
 
-    ![](https://secure2.wostatic.cn/static/v3hXxtgDTAizx5S3jEsHq7/image.png?auth_key=1750482654-fX4hs5xiKsRNvBhBCHAZdF-0-df49cfe91f5882c5eea2735fb191d01d)
+    ![alt text](images/image-48.png)
 
     配置完毕之后，通过以下指令重新启动MySQL服务器进行测试，查看慢日志文件中记录的信息 `/var/lib/mysql/localhost-slow.log`。
 
-    ![](https://secure2.wostatic.cn/static/qxffnvX8jk3VxG4pVCnmHZ/image.png?auth_key=1750482654-rb694M1qybGJrnUcEXfNdE-0-8ed9c26154a2f80d5ec2dbc8dfd6a8ba)
+    ![alt text](images/image-49.png)
 ## SQL语句执行很慢, 如何分析呢？
 
 ### 慢查询可能的原因
@@ -37,7 +37,7 @@
 
 可以采用`EXPLAIN` 或者 `DESC`命令获取 MySQL 如何执行 `SELECT` 语句的信息，注意其中的字段
 
-![](https://secure2.wostatic.cn/static/oK8cfFJnTZAvGwQ84GvMKc/image.png?auth_key=1750482654-dzp5NPKWQ7eh6K2E56b7vT-0-3a35ab9f7afb8122976feebcdf3d17c2)
+![alt text](images/image-50.png)
 
 - 通过`key`和`key_len`检查**是否命中了索引**（索引本身存在是否有失效的情况）
 - 通过`type`字段查看sql是否有进一步的优化空间，是否存在全索引扫描或全盘扫描
@@ -54,7 +54,7 @@
     - **all**：全盘扫描
 - 通过`extra`建议判断，是否出现了**回表**的情况，如果出现了，可以尝试添加索引或修改返回字段来修复
 
-    ![](https://secure2.wostatic.cn/static/2vsnfjM3jn9egsWCBPMnq8/image.png?auth_key=1750482654-nFXm2bPXXvtrkCECovS2Nk-0-77c6f28e2f3246a31140f2aeef5a776e)
+    ![alt text](images/image-51.png)
 
 ## 了解过索引吗？（什么是索引）
 
@@ -78,7 +78,7 @@ B+树的优点：
 
 关键：聚集索引的记录包括整行数据，二非聚簇索引的记录仅有主键/聚簇索引id
 
-![](https://secure2.wostatic.cn/static/nd4ncTPR25BJfph4kYPjxd/image.png?auth_key=1750482654-nfaDfMogufZRsw4QG8nwyv-0-046db77433b2a3e8fe96661bf4416873)
+![alt text](images/image-52.png)
 
 聚集索引选取规则:
 
@@ -104,7 +104,7 @@ B+树的优点：
 
 比如：
 
-![](https://secure2.wostatic.cn/static/bHQLk5r7TH5nbUrgttjVp7/image.png?auth_key=1750482654-bNMSziaiiCkPwNoxGX7RVL-0-c7a0c8f130fb09e69512d33612f3ee26)
+![alt text](images/image-53.png)
 
 在进行分页查询时，如果执行 `limit 9000000,10` ，此时需要MySQL排序前9000010 记录，仅仅返回 9000000 - 9000010 的记录，其他记录丢弃，查询排序的代价非常大 。
 
@@ -112,7 +112,7 @@ B+树的优点：
 
 优化思路: 一般分页查询时，通过创建**覆盖索引**能够比较好地提高性能，可以通过覆盖索引加子查询形式进行优化
 
-![](https://secure2.wostatic.cn/static/p7F5pd3ExhTbQLs2mToN5n/image.png?auth_key=1750482654-xeFWm8CodQK6U75MyYEgWN-0-27d941834094a8988ea5d90571ef3c9c)
+![alt text](images/image-54.png)
 
 ## 索引创建原则有哪些？
 
@@ -158,7 +158,8 @@ B+树的优点：
 
     读写分离解决的是，数据库的写入，影响了查询的效率。
 
-    ![](https://secure2.wostatic.cn/static/cUenxb1b8UyuSK75a4v7yr/image.png?auth_key=1750482654-q3r3XWvbuSyz3CgAsyWYiw-0-3bc650bd13638c90740f4f29276e339a)
+    ![alt text](images/image-55.png)
+
 - **分库分表**
 
 ## 事务的特性是什么？可以详细说一下吗？
@@ -180,11 +181,11 @@ B+树的优点：
 
 ## 并发事务带来哪些问题？
 
-![](https://secure2.wostatic.cn/static/rTmxovF8Vcp442jDRfJwZY/image.png?auth_key=1750482655-3knVK7XZPharvyngW514iy-0-9929610e7d5fd440e1df715a4b58fbfb)
+![alt text](images/image-56.png)
 
 ## 怎么解决这些问题呢？MySQL的默认隔离级别是？
 
-![](https://secure2.wostatic.cn/static/8MJ6wfxwdUePBrZPRN9nrt/image.png?auth_key=1750482655-nRUyNG8hjapoQoiHXD9psu-0-0cbb2b907cacaf85378b867af9dce6fd)
+![alt text](images/image-57.png)
 
 事务隔离级别越高，**数据越安全**，但是**性能越低**。
 
@@ -218,10 +219,10 @@ MVCC的具体实现，主要依赖于数据库记录中的**隐式字段**、**u
     - 回滚日志，存储老版本数据
     - 版本链：多个事务并行操作某一行记录，记录不同事务修改数据的版本，通过`roll_pointer`指针形成一个链表
 
-    ![](https://secure2.wostatic.cn/static/gWdHc43H6Ezb3QKrnNg4FF/image.png?auth_key=1750482655-4K8LHntjNkyWZ9yPNHhN2S-0-c3e8543c89adaf006a1af11fceb0b0bc)
+    ![alt text](images/image-58.png)
 - **readview**
 
-    ![](https://secure2.wostatic.cn/static/siuj6Q84bQctkSHaUxnQo4/image.png?auth_key=1750482655-u1QxkHMfhJ73xU42trPZWa-0-dd371e5853136255dd95464f31d66cbe)
+    ![alt text](images/image-59.png)
 
     `readView`解决的是一个事务查询**选择版本的问题**
 
@@ -231,12 +232,13 @@ MVCC的具体实现，主要依赖于数据库记录中的**隐式字段**、**u
 
     - **RC（读已提交）** ：**每一次执行快照读**时生成ReadView
 
-        ![](https://secure2.wostatic.cn/static/uHMg6CmdFDC7Ju9a81ZPZF/image.png?auth_key=1750482655-ra3qNAAGa49kYskKbWYrPz-0-ece02ef73b1d244feb981d954faf89d9)
+        ![alt text](images/image-60.png)
+
     - **RR（可重复读）**：仅在事务中**第一次执行快照读**时生成ReadView，后续复用
 
-        ![](https://secure2.wostatic.cn/static/kbEqHgdMLV4itYiNG5Lxdj/image.png?auth_key=1750482655-fMMjmmsN1gNDyjnzfdP5xf-0-945eb1a11a809fad569829385a64833f)
+        ![alt text](images/image-61.png)
 
-    ![](https://secure2.wostatic.cn/static/vhYPt7SAKev5VUNRkJf84c/image.png?auth_key=1750482693-cPwR4SEUFQFtE3YkdFbBah-0-10de7ee4cc9bd8aaefee1583c084b9bb)
+    ![alt text](images/image-62.png)
 
 ## MySQL主从同步原理
 
@@ -251,7 +253,7 @@ MySQL主从复制的核心就是**二进制日志**(**DDL（数据定义语言�
 
 单表1000万或超过20G
 
-![](https://secure2.wostatic.cn/static/bdgaCoMMiPsJcBvdisDNX7/image.png?auth_key=1750482710-3TeR3jqSLLhrhkDH5C6A96-0-fd2bec2f4781cae1d4b85638258b9f94)
+![alt text](images/image-63.png)
 
 - **垂直分库**
 
