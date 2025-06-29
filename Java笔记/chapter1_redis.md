@@ -246,7 +246,7 @@
 
     **全量同步：**
 
-    1.从节点请求主节点同步数据（**replicationid**、**offset **）
+    1.从节点请求主节点同步数据（**replicationid**、**offset**）
 
     2.主节点判断是否是第一次请求，是第一次就与从节点**同步版本信息**（replicationid和offset）
 
