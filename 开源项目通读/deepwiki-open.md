@@ -164,3 +164,7 @@ Wiki页面生成就是生成技术文档的具体过程。这个任务只需要�
     这个 Prompt 同样被打包成请求体，通过 WebSocket 发送到后端的 `/generate_page_content` 接口。这个过程会在一个队列中对所有页面依次执行。前端每收到一个页面的生成内容（Markdown 文本），就会将其存储在 `generatedPages` 这个 state 对象中，以页面的 `id` 作为 key。
 
 #### 2. Deep Research
+    
+    允许用户自主提问，系统将基于构件好的RAG进行检索并生成回答。
+
+    
