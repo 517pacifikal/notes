@@ -365,34 +365,34 @@ Python 后端（基于 FastAPI）接收到请求后，开始执行核心的 RAG 
 
     抽象基类 `ModelClient`: 是项目设计的精妙之处。它没有为每个 LLM 提供商写一套重复的逻辑，而是**设计了一个统一的抽象层**，并用具体实现类继承它。
 
-    具体实现累类:
+    具体实现类:
     
-       - `OpenAIClient`:
+    - `OpenAIClient`:
             
-            支持平台: OpenAI 官方 API 以及任何与 OpenAI API 格式兼容的第三方服务（例如，一些本地模型框架）。
+        支持平台: OpenAI 官方 API 以及任何与 OpenAI API 格式兼容的第三方服务（例如，一些本地模型框架）。
 
-            如 gpt-4o, gpt-4-turbo, gpt-3.5-turbo 等。可以通过 `model` 参数指定
+        如 gpt-4o, gpt-4-turbo, gpt-3.5-turbo 等。可以通过 `model` 参数指定
 
-            可以通过设置 OPENAI_BASE_URL 环境变量指向你的本地服务地址（例如 `http://localhost:11434/v1`），然后选择 OpenAI 提供商来调用本地模型。
+        可以通过设置 OPENAI_BASE_URL 环境变量指向你的本地服务地址（例如 `http://localhost:11434/v1`），然后选择 OpenAI 提供商来调用本地模型。
 
-            对 Ollama 的支持是通过 `OpenAIClient` 实现的。Ollama 服务在启动后，默认会在 `http://localhost:11434` 暴露一个与 OpenAI API 格式兼容的接口。因
+        对 Ollama 的支持是通过 `OpenAIClient` 实现的。Ollama 服务在启动后，默认会在 `http://localhost:11434` 暴露一个与 OpenAI API 格式兼容的接口。因
     
-       - `AzureAIClient`:
+    - `AzureAIClient`:
 
-            支持平台: Microsoft Azure OpenAI Service。
+        支持平台: Microsoft Azure OpenAI Service。
 
-            支持部署在 Azure 上的各种 OpenAI 模型。在 Azure 中，你不是直接指定模型名称（如 gpt-4o），而是指定你的“部署名称 (deployment name)”。
+        支持部署在 Azure 上的各种 OpenAI 模型。在 Azure 中，你不是直接指定模型名称（如 gpt-4o），而是指定你的“部署名称 (deployment name)”。
 
-            需要设置 `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, 和 `AZURE_OPENAI_VERSION` 环境变量。它同时支持 API Key 和 Azure AD 两种认证方式。
+        需要设置 `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, 和 `AZURE_OPENAI_VERSION` 环境变量。它同时支持 API Key 和 Azure AD 两种认证方式。
 
-       - `OpenRouterClient`: 
+    - `OpenRouterClient`: 
 
-            支持平台: OpenRouter.ai。OpenRouter 是一个模型聚合器，它允许你通过一个统一的 API 调用来自不同提供商（如 Google, Anthropic, Mistral AI, Meta 等）的多种模型。
+        支持平台: OpenRouter.ai。OpenRouter 是一个模型聚合器，它允许你通过一个统一的 API 调用来自不同提供商（如 Google, Anthropic, Mistral AI, Meta 等）的多种模型。
 
-            支持非常广泛的模型列表，几乎涵盖了市面上所有主流的开源和闭源模型。调用时需要指定模型全名，例如 `google/gemini-pro`, `anthropic/claude-3-opus`, `mistralai/mixtral-8x7b-instruct` 等
+        支持非常广泛的模型列表，几乎涵盖了市面上所有主流的开源和闭源模型。调用时需要指定模型全名，例如 `google/gemini-pro`, `anthropic/claude-3-opus`, `mistralai/mixtral-8x7b-instruct` 等
 
-       - `BedrockClient`:
+    - `BedrockClient`:
 
-          支持平台: Amazon Bedrock。这是亚马逊云（AWS）提供的托管式基础模型服务。
+      支持平台: Amazon Bedrock。这是亚马逊云（AWS）提供的托管式基础模型服务。
 
 #### 第三步 接收LLM响应并返回给前端(LLM->Server->Client)
