@@ -275,4 +275,7 @@ Deep Research 流程将一个模糊的大问题，变成了一个结构化的研
     结果反馈: LLM 生成的包含所有阶段（计划、更新、总结）的完整 Markdown 文本，被存储在 response state 中。
     分阶段展示: 为了避免信息过载，extractResearchStage 函数会将这个长文本解析成多个 ResearchStage 对象并存入 researchStages 数组。前端界面会根据这个数组渲染出导航按钮（上一阶段/下一阶段），让用户可以方便地回顾研究的每一个步骤。
 
+### 与模型的交互
+
+
 
