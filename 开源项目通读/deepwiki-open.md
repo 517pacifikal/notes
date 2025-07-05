@@ -279,7 +279,7 @@ Deep Research 流程将一个模糊的大问题，变成了一个结构化的研
 
 这个项目的交互设计非常现代化，优先使用 WebSocket 实现实时、双向的流式通信，并提供了 HTTP 作为备用方案。
 
-#### 第一步 前端发送问题
+#### Step 1. 前端发送问题
 
 前端会收集所有必要信息，构建一个名为 `requestBody` 的 JSON 对象。这个对象的数据结构由 `websocketClient.ts `中的 `ChatCompletionRequest` 接口定义。
 
@@ -343,7 +343,7 @@ WebSocket 协议非常适合用于现代 LLM 应用，尤其是在需要实时�
 
     WebSocket: 只需要维持一个 TCP 连接。没有数据时，连接就静默地保持着，几乎不消耗资源。只有在真正有新数据时才会进行传输。
 
-#### 第二步 后端处理请求并与 LLM 交互 (Server <-> LLM)
+#### Step 2. 后端处理请求并与 LLM 交互 (Server <-> LLM)
 
 Python 后端（基于 FastAPI）接收到请求后，开始执行核心的 RAG 和 LLM 调用逻辑。
 
@@ -365,6 +365,34 @@ Python 后端（基于 FastAPI）接收到请求后，开始执行核心的 RAG 
 
     抽象基类 `ModelClient`: 是项目设计的精妙之处。它没有为每个 LLM 提供商写一套重复的逻辑，而是**设计了一个统一的抽象层**，并用具体实现类继承它。
 
+    - `__init__(self, *args, **kwargs)`: 
+        
+        构造函数。它确保子类在初始化时，至少会准备好创建同步和异步客户端的条件。
+
+    - `init_sync_client(self) / init_async_client(self)`: 
+        
+        分别用于初始化同步和异步的 API 客户端对象。例如，在 OpenAIClient 中，它们会分别创建 openai.OpenAI 和 openai.AsyncOpenAI 的实例。
+
+    - `call(self, api_kwargs, model_type) / acall(self, api_kwargs, model_type)`: 
+  
+        这是执行 API 调用的核心方法，分为同步 (call) 和异步 (acall) 两种。它们接收一个 api_kwargs 字典，这个字典包含了已经为特定 API 格式化好的所有参数。具体的客户端（如 OpenAIClient）会在这里实现真正的 API 请求、错误处理和重试逻辑。
+
+    - `convert_inputs_to_api_kwargs(self, input, model_kwargs, model_type)`: 
+        
+        这是一个至关重要的“转换器”或“桥接”方法。它的作用是将项目内部的**通用输入（input）**和**模型参数（model_kwargs）**转换成特定 API 提供商所要求的、精确的字典格式（api_kwargs）。例如，它会把一个简单的字符串输入转换成 OpenAI API 所需的 `{"messages": [{"role": "user", "content": "..."}]} `格式。
+
+    - `parse_chat_completion(self, completion)`: 
+  
+        在收到模型的响应（completion）后，此方法负责解析这个响应，从中提取出有用的数据（比如生成的文本），并将其封装成项目内部统一的 `GeneratorOutput` 对象。
+
+    - `track_completion_usage(self, completion)`: 
+  
+        用于从 API 响应中解析并追踪 token 的使用情况（提示 token、完成 token、总 token），这对于成本控制和性能分析非常重要。
+
+    - `parse_embedding_response(self, response)`: 
+        
+        与 `parse_chat_completion` 类似，但专门用于解析嵌入（Embedding）模型的响应。
+
     具体实现类:
     
     - `OpenAIClient`:
@@ -375,8 +403,8 @@ Python 后端（基于 FastAPI）接收到请求后，开始执行核心的 RAG 
 
         可以通过设置 OPENAI_BASE_URL 环境变量指向你的本地服务地址（例如 `http://localhost:11434/v1`），然后选择 OpenAI 提供商来调用本地模型。
 
-        对 Ollama 的支持是通过 `OpenAIClient` 实现的。Ollama 服务在启动后，默认会在 `http://localhost:11434` 暴露一个与 OpenAI API 格式兼容的接口。因
-    
+        对 Ollama 的支持是通过 `OpenAIClient` 实现的。Ollama 服务在启动后，默认会在 `http://localhost:11434` 暴露一个与 OpenAI API 格式兼容的接口。因为 Ollama 的一些特殊性，具体细节请参考 `websocket_wiki.py` 中的注释。
+
     - `AzureAIClient`:
 
         支持平台: Microsoft Azure OpenAI Service。
@@ -395,4 +423,111 @@ Python 后端（基于 FastAPI）接收到请求后，开始执行核心的 RAG 
 
       支持平台: Amazon Bedrock。这是亚马逊云（AWS）提供的托管式基础模型服务。
 
-#### 第三步 接收LLM响应并返回给前端(LLM->Server->Client)
+#### Step 3. 接收LLM响应并返回给前端(LLM->Server->Client)
+
+以openAIClient为例，非流式接收LLM响应：
+
+```python
+import asyncio
+
+async def get_full_response():
+    client = OpenAIClient()
+    # 准备非流式请求的参数
+    api_kwargs = client.convert_inputs_to_api_kwargs(
+        input="What is the capital of France?",
+        model_kwargs={"model": "gpt-4o", "stream": False},
+        model_type=ModelType.LLM
+    )
+
+    # 使用 await 直接接收完整的 ChatCompletion 对象
+    completion_object = await client.acall(api_kwargs=api_kwargs, model_type=ModelType.LLM)
+
+    # 现在可以从对象中解析内容
+    answer = completion_object.choices[0].message.content
+    print(f"The complete answer is: {answer}")
+
+asyncio.run(get_full_response())
+```
+
+流式接收LLM响应
+
+```python
+import asyncio
+
+async def process_streaming_response():
+    client = OpenAIClient()
+    # 准备流式请求的参数
+    api_kwargs = client.convert_inputs_to_api_kwargs(
+        input="Write a short story about a robot.",
+        model_kwargs={"model": "gpt-4o", "stream": True},
+        model_type=ModelType.LLM
+    )
+
+    # acall 返回一个异步迭代器
+    stream_response = await client.acall(api_kwargs=api_kwargs, model_type=ModelType.LLM)
+
+    print("Receiving stream...")
+    # 使用 async for 循环来接收每一块数据
+    async for chunk in stream_response:
+        # chunk 是一个 ChatCompletionChunk 对象
+        if chunk.choices:
+            delta = chunk.choices[0].delta
+            if delta and delta.content:
+                # 打印每一小块文本，模拟打字机效果
+                print(delta.content, end="", flush=True)
+    
+    asyncio.run(process_streaming_response())
+```
+
+### 检索增强生成 (RAG)
+
+将要阅读的仓库克隆到本地。这个项目无论项目来源是什么，最终都要将其存储到本地来进行解析。
+
+项目实现了三级缓存机制：
+
+- 仓库级缓存
+
+    完整的Git仓库克隆,保留所有文件和Git历史,支持增量更新（通过Git pull）
+
+    **生产时机**：当用户在前端输入一个仓库地址（GitHub/GitLab/Bitbucket）并发起解析请求时，后端首先会检查本地是否已存在该仓库的克隆。如果没有，就会调用 download_repo 方法将仓库克隆到本地（如 ~/.adalflow/repos/owner_repo/）。
+
+    **使用时机**：后续所有的文件读取、代码分析、文档生成、向量化等操作，都是基于本地克隆的仓库进行的。每次解析同一个仓库时，都会优先复用本地已有的克隆，避免重复下载。
+
+- 向量级缓存
+
+    **TODO 简单学习词向量相关的知识**
+    
+    将下面这些信息进行了向量化存储：
+
+    - 源代码文件：.py, .js, .ts, .java, .cpp, .c, .go, .rs 等
+    - 配置文件：package.json, requirements.txt, Dockerfile，docker-compose.yml 等
+    - 文档文件：README.md, .md, .txt, .rst 等
+    - 数据文件：.json, .yaml, .yml, .xml 等（配置相关）
+    
+    DeepWiki 使用的是 FAISS (Facebook AI Similarity Search) 作为向量数据库技术。
+    
+    **生产时机**：仓库克隆后，系统会递归读取所有需要的文件（代码、文档等），对内容进行分割和预处理，然后调用嵌入模型（如 OpenAI 或 Ollama，通过 get_embedder() 实现）将文本转为向量。所有向量和元数据会被存储到本地的 FAISS 数据库（如 ~/.adalflow/databases/owner_repo.pkl）。
+
+    **使用时机**：
+
+    索引阶段 (构建知识库):
+
+    当项目第一次分析一个代码仓库时，它会把仓库里所有的源代码文件切分成许多小的文本块（chunks）。然后，它会调用嵌入模型，将每一个文本块都转换成一个由数字组成的数学向量（即“嵌入”）。这些向量被存储在一个本地的向量数据库中（本项目使用 FAISS）。这个过程就像是为整本书（代码仓库）的每一页（代码块）都制作了一张基于“语义”的索引卡片。检索阶段 (查找相关上下文):
+
+    当用户提出一个问题时（例如，“用户认证流程是怎么实现的？”），项目会使用同一个嵌入模型，将用户的问题也转换成一个向量。接着，它拿着这个“问题向量”去向量数据库中进行搜索，找出与它在数学上最“接近”的那些代码块向量。这些被找出的、最相关的代码块，就会作为上下文（Context），连同用户的原始问题一起，被发送给语言模型 (LLM)，由 LLM 来生成最终的、有理有据的回答。
+
+- Wiki级缓存
+
+    Wiki级缓存保存了针对某个仓库、某种语言、某个模型生成的完整Wiki结构和内容，包括：
+
+    - Wiki结构信息（如目录、页面列表、描述等）
+    - 每个Wiki页面的详细内容（AI生成的文档、标题、关联文件、重要性、相关页面等）
+    - 仓库元信息（如owner、repo、repo类型、repoUrl等）
+    - 生成时用到的AI模型和提供商信息
+
+    缓存的形式是JSON文件的形式，具体存储文档的内容。
+
+    **生产时机**：当大模型（如 OpenAI、Gemini、Ollama 等）根据仓库内容和RAG检索到的上下文生成结构化Wiki文档后，系统会将这些内容（包括目录结构、每个页面的内容、相关元信息等）序列化为JSON文件，存储在本地（如 ~/.adalflow/wikicache/deepwiki_cache_github_owner_repo_en.json）。
+
+    **使用时机**：用户再次访问同一仓库、同一语言、同一模型时，系统会优先读取JSON缓存，直接返回生成好的Wiki文档，极大提升响应速度。前端页面展示Wiki内容、导出Markdown/JSON、页面跳转等，都是基于这个缓存数据。只有在缓存不存在或用户主动要求重新生成时，才会重新走一遍生成流程。
+
