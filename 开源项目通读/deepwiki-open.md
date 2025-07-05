@@ -277,5 +277,122 @@ Deep Research 流程将一个模糊的大问题，变成了一个结构化的研
 
 ### 与模型的交互
 
+这个项目的交互设计非常现代化，优先使用 WebSocket 实现实时、双向的流式通信，并提供了 HTTP 作为备用方案。
 
+#### 第一步 前端发送问题
 
+前端会收集所有必要信息，构建一个名为 `requestBody` 的 JSON 对象。这个对象的数据结构由 `websocketClient.ts `中的 `ChatCompletionRequest` 接口定义。
+
+内容：包括仓库 URL、完整的对话历史 `messages`、用户选择的模型提供商 `provider` 和具体模型 `model` 等。
+
+```typescript
+
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
+export interface ChatCompletionRequest {
+  repo_url: string;
+  messages: ChatMessage[];
+  filePath?: string;
+  token?: string;
+  type?: string;
+  provider?: string;
+  model?: string;
+  language?: string;
+  excluded_dirs?: string;
+  excluded_files?: string;
+}
+
+```
+
+建立 **WebSocket** 连接： 前端会调用 `websocketClient.ts` 中的 `createChatWebSocket` 函数。
+
+问：为什么优先使用**WebSocket**?
+
+WebSocket 协议非常适合用于现代 LLM 应用，尤其是在需要实时、交互式体验的场景中。它有以下优势：
+
+1. 真正的全双工通讯
+
+    HTTP: 是一个“请求-响应”模型。客户端发送一个请求，服务器返回一个响应，然后连接就关闭了（除非使用 Keep-Alive，但本质仍是单向的）。如果服务器有新的信息想主动推送给客户端，它做不到，只能等待客户端下一次轮询。
+
+    WebSocket: 一旦连接建立，客户端和服务器之间就形成了一条持久的、双向的通道。任何一方都可以随时向对方发送数据，无需重新建立连接。
+
+    支持复杂的交互式会话 (Interactive Sessions) 对于像 `Deep Research` 这样的多轮对话场景，WebSocket 的优势更加明显。
+
+    状态保持：连接是持久的，服务器可以更容易地将会话状态与某个 WebSocket 连接关联起来。
+
+    中断与控制：如果需要，客户端可以随时通过这个双向通道发送一个“停止生成”的控制消息，服务器收到后可以立即中断对 LLM 的请求。用 HTTP 实现这一点会非常困难。
+
+2. 低延迟
+
+    HTTP: 每次通信都需要完整的请求头，这会增加开销，尤其是在频繁的小数据包通信中。
+
+    WebSocket: 初始握手时有一次类似 HTTP 的请求头，但之后的数据帧（frames）头部非常小，大大减少了网络开销，使得数据传输更快，延迟更低。
+
+    WebSocket 完美匹配流式响应 (Streaming) LLM 生成回答是一个逐字（token）进行的过程。使用 WebSocket，后端每从 LLM API 收到一个新的 token，就可以立即通过这个持久的通道将其推送到前端。
+
+    用户体验：用户能看到“打字机”一样的实时生成效果，而不是盯着一个加载动画等待几秒甚至几十秒才能看到完整答案。这极大地提升了交互的即时感和流畅性。
+    
+    HTTP 实现流式响应：虽然也可以通过 `Transfer-Encoding: chunked `实现，但它在客户端处理起来更复杂，且不如 WebSocket 的**事件驱动模型（onmessage）**来得直接和优雅。
+
+3. 减少服务器负载和网络拥塞
+
+    HTTP 轮询: 为了模拟实时性，客户端需要不断地向服务器发送请求（“有新数据吗？”“有新数据吗？”）。这会产生大量无意义的请求，极大地增加了服务器的负载和网络流量。
+
+    WebSocket: 只需要维持一个 TCP 连接。没有数据时，连接就静默地保持着，几乎不消耗资源。只有在真正有新数据时才会进行传输。
+
+#### 第二步 后端处理请求并与 LLM 交互 (Server <-> LLM)
+
+Python 后端（基于 FastAPI）接收到请求后，开始执行核心的 RAG 和 LLM 调用逻辑。
+
+1. 接收与解析请求：
+
+    WebSocket 端点：websocket_wiki.py 中的 `websocket_endpoint` 函数负责监听和处理 WebSocket 连接。它接收到 JSON 数据后，会解析出 `messages`、`provider`、`model` 等信息。
+    
+    HTTP 端点：如果通过 HTTP 访问，FastAPI 的路由（如 `/api/chat/stream`）会接收请求。
+
+2. 构建最终的Prompt：
+
+    后端并不会直接将用户的问题发给 LLM。它会执行 **RAG** 流程：
+
+    - 调用 rag.py 中的 `get_retriever` 来获取与当前对话最相关的代码片段（上下文）。
+
+    - 将**系统指令**（System Prompt，定义在 `rag.py` 中，要求 LLM 扮演代码助手并使用 Markdown）、检索到的**代码上下文**、以及用户的**对话历史**，组合成**一个完整的、信息量极大的 Prompt**。
+
+3. 与不同来源的LLM通信
+
+    抽象基类 `ModelClient`: 是项目设计的精妙之处。它没有为每个 LLM 提供商写一套重复的逻辑，而是**设计了一个统一的抽象层**，并用具体实现类继承它。
+
+    具体实现累类:
+    
+       - `OpenAIClient`:
+            
+            支持平台: OpenAI 官方 API 以及任何与 OpenAI API 格式兼容的第三方服务（例如，一些本地模型框架）。
+
+            如 gpt-4o, gpt-4-turbo, gpt-3.5-turbo 等。可以通过 `model` 参数指定
+
+            可以通过设置 OPENAI_BASE_URL 环境变量指向你的本地服务地址（例如 `http://localhost:11434/v1`），然后选择 OpenAI 提供商来调用本地模型。
+
+            对 Ollama 的支持是通过 `OpenAIClient` 实现的。Ollama 服务在启动后，默认会在 `http://localhost:11434` 暴露一个与 OpenAI API 格式兼容的接口。因
+    
+       - `AzureAIClient`:
+
+            支持平台: Microsoft Azure OpenAI Service。
+
+            支持部署在 Azure 上的各种 OpenAI 模型。在 Azure 中，你不是直接指定模型名称（如 gpt-4o），而是指定你的“部署名称 (deployment name)”。
+
+            需要设置 `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, 和 `AZURE_OPENAI_VERSION` 环境变量。它同时支持 API Key 和 Azure AD 两种认证方式。
+
+       - `OpenRouterClient`: 
+
+            支持平台: OpenRouter.ai。OpenRouter 是一个模型聚合器，它允许你通过一个统一的 API 调用来自不同提供商（如 Google, Anthropic, Mistral AI, Meta 等）的多种模型。
+
+            支持非常广泛的模型列表，几乎涵盖了市面上所有主流的开源和闭源模型。调用时需要指定模型全名，例如 `google/gemini-pro`, `anthropic/claude-3-opus`, `mistralai/mixtral-8x7b-instruct` 等
+
+       - `BedrockClient`:
+
+          支持平台: Amazon Bedrock。这是亚马逊云（AWS）提供的托管式基础模型服务。
+
+#### 第三步 接收LLM响应并返回给前端(LLM->Server->Client)
