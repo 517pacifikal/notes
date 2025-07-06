@@ -593,7 +593,7 @@ OpenManus 是一个用于构建通用人工智能代理的开源框架，它支�
 
 ```mermaid
 graph TD
-    A["Agent Core (mcp.py)"] -->"Tool Call" B["Tool Collection (tool_collection.py)"]
+    A["Agent Core (mcp.py)"] -->|"Tool Call"| B["Tool Collection (tool_collection.py)"]
     B --> C["Browser Tool (browser_use_tool.py)"]
     B --> D["Chart Visualization (chartVisualize.ts)"]
     B --> E["Sandbox Terminal (terminal.py)"]
