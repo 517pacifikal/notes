@@ -632,10 +632,10 @@ Sources: [app/agent/mcp.py]()
 
 ```mermaid
 graph TD
-    TC[ToolCollection] --> TC1[add_tool()]
-    TC --> TC2[add_tools()]
-    TC --> TC3[get_tool()]
-    TC --> TC4[execute_all()]
+    TC["ToolCollection"] --> TC1["add_tool()"]
+    TC --> TC2["add_tools()"]
+    TC --> TC3["get_tool()"]
+    TC --> TC4["execute_all()"]
 ```
 
 Sources: [app/tool/tool_collection.py]()
