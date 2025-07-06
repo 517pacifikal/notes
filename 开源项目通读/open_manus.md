@@ -664,10 +664,10 @@ Sources: [app/tool/browser_use_tool.py](), [app/prompt/browser.py]()
 
 ```mermaid
 graph TD
-    CV[ChartVisualize] --> CV1[parseSpec()]
-    CV --> CV2[serializeSpec()]
-    CV --> CV3[readStdin()]
-    CV --> CV4[saveChartRes()]
+    CV["ChartVisualize"] --> CV1["parseSpec()"]
+    CV --> CV2["serializeSpec()"]
+    CV --> CV3["readStdin()"]
+    CV --> CV4["saveChartRes()"]
 ```
 
 Sources: [app/tool/chart_visualization/src/chartVisualize.ts]()
