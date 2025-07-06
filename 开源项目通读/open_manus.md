@@ -593,7 +593,7 @@ OpenManus 是一个用于构建通用人工智能代理的开源框架，它支�
 
 ```mermaid
 graph TD
-    A[Agent Core (mcp.py)] -->|调用工具| B[Tool Collection (tool_collection.py)]
+    A[Agent Core (mcp.py)] -->|Tool Call| B[Tool Collection (tool_collection.py)]
     B --> C[Browser Tool (browser_use_tool.py)]
     B --> D[Chart Visualization (chartVisualize.ts)]
     B --> E[Sandbox Terminal (terminal.py)]
@@ -690,18 +690,18 @@ Sources: [app/sandbox/core/terminal.py]()
 
 ```mermaid
 graph TD
-    U[用户请求] --> M[MCP Agent]
-    M --> T[工具选择]
-    T -->|浏览器操作| BT[Brower Use Tool]
-    T -->|图表生成| CT[Chart Visualization]
-    T -->|终端执行| ST[Sandbox Terminal]
-    BT -->|DOM 操作| BP[Brower Prompt]
-    CT -->|HTML 输出| CH[Chart Output]
-    ST -->|命令执行| TR[Terminal Response]
+    U[User Call] --> M[MCP Agent]
+    M --> T[Tool Selection]
+    T -->|Browser Call| BT[Brower Use Tool]
+    T -->|Chart Generation| CT[Chart Visualization]
+    T -->|Terminal Execution| ST[Sandbox Terminal]
+    BT -->|DOM Execution| BP[Brower Prompt]
+    CT -->|HTML Output| CH[Chart Output]
+    ST -->|Command Execution| TR[Terminal Response]
     TR --> M
     CH --> M
     BP --> M
-    M --> R[响应返回给用户]
+    M --> R[Response To User]
 ```
 
 Sources: [app/agent/mcp.py](), [app/tool/tool_collection.py](), [app/tool/browser_use_tool.py](), [app/tool/chart_visualization/src/chartVisualize.ts](), [app/sandbox/core/terminal.py]()
