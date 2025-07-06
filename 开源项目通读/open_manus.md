@@ -1,8 +1,6 @@
-# Wiki Documentation for /Users/aaronwu/开发/OpenManus
+# OpenManus
 
-Generated on: 2025-07-06 20:27:27
-
-## Table of Contents
+## 目录
 
 - [项目简介](#page-1)
 - [快速入门](#page-2)
