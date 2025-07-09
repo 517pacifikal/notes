@@ -1,0 +1,393 @@
+# 目前流行的 Agent Workflow 有哪些？
+
+## 目前主流的 Agent Workflow（智能体工作流）模式
+
+1. **ReAct（Reason + Act）**
+
+    **是什么：**
+
+    ReAct 模式融合了“推理（Reasoning）”和“行动（Acting）”。Agent 通过交替进行思考（分析当前状态、推断下一步）和行动（采取具体操作、调用工具或环境），实现动态决策与多步任务执行。    
+
+    **最大特点：**
+
+    - 推理与行动交替进行，Agent 可边思考边执行，遇到新信息时能及时调整决策。
+
+    - 鼓励 Agent 明确表达自己的思考过程（类似 Chain of Thought），但每一步思考后可以立即采取行动。
+
+    **缺陷：**
+
+    - 任务步骤过多时效率比较低
+
+    - 依赖推理环节的准确性。
+
+    **例子：**
+    假设 Agent 需要帮用户预定火车票。
+
+        Reason: “我需要知道目的地和时间。”
+
+        Act: 询问用户目的地。
+
+        Reason: “用户说去上海，需要查上海的车次。”
+
+        Act: 查询数据库获取车次列表。
+
+        Reason: “有多趟车，可以向用户推荐最早的。”
+
+        Act: 推荐给用户。
+    
+    eino的reAct示例：
+
+    ![alt text](images/image.png)
+    
+    https://github.com/cloudwego/eino/blob/main/flow/agent/react/react.go
+
+2. **Plan & Execute（规划-执行）**
+
+    **是什么？**
+
+    Agent 首先整体规划整个任务，把目标拆解为一系列子任务或步骤，然后顺序、分批执行每个子任务。
+
+    **最大特点：**
+
+    先规划、后执行，流程通常是线性的。
+
+    任务分解和执行相互独立，计划阶段结束后不再动态调整。
+
+    **优势：**
+
+    对于结构清晰、步骤明确的流程非常高效。
+
+    易于监控和审计，因为整个计划和执行过程一目了然。
+
+    **缺陷：**
+
+    缺乏即时调整能力，计划外变化时适应能力弱。
+    
+    计划阶段错误会导致后续执行全部出错。
+    
+    例子：
+    
+    开源项目Deepwiki-open
+
+3. **Tool-Augmented LLM Agent（工具增强型智能体）**
+
+    **是什么？**
+    
+    Agent 具备动态调用外部工具、API、数据库等能力，能突破大语言模型的知识和能力局限，实现更丰富的任务处理。
+
+    **最大特点：**
+
+    LLM 结合外部工具，动态选择和调用合适的工具辅助决策。
+    
+    通常采用 **Function Calling**、**插件机制**等实现。
+
+    **Function Calling:**
+
+        Function Calling 是指大语言模型（如 OpenAI GPT-4、Gemini、Claude 等）在推理过程中，能够“理解”并自动生成符合预设格式的函数调用请求，然后由外部系统实际执行这些函数，并将结果返回给模型。
+
+        这种方式让 LLM 能直接与外部世界（API、数据库、工具等）进行交互，而不是只生成文本。
+
+        函数定义：开发者先用 OpenAPI/JSON Schema 等定义一组可供调用的函数（包括名称、参数、描述、返回值等）。
+
+        模型推理：用户提问时，模型根据输入内容和函数定义，决定是否需要调用某个函数，并自动生成函数调用请求（包括参数）。
+
+        执行与反馈：平台收到模型的函数调用请求后，实际执行对应代码或 API，把执行结果（如数据、结果等）再反馈给模型，模型据此继续生成后续文本或调用。
+    
+    ```go
+
+    // ===模型绑定工具===
+
+    import "github.com/cloudwego/eino/schema"
+
+    // 定义工具
+    tools := []*schema.ToolInfo{
+        {
+        Name: "search",
+        Desc: "搜索信息",
+        ParamsOneOf: schema.NewParamsOneOfByParams(map[string]*schema.ParameterInfo{
+            "query": {
+                Type:     schema.String,
+                Desc:     "搜索关键词",
+                Required: true,
+            },
+        }),
+        },
+    }
+
+    // 绑定可选工具
+    err := model.BindTools(tools)
+
+    // 绑定强制工具
+    err := model.BindForcedTools(tools)
+
+    // ===直接对话===
+    package main
+
+    import (
+        "context"
+        "time"
+        
+        "github.com/cloudwego/eino-ext/components/model/openai"
+        "github.com/cloudwego/eino/schema"
+    )
+
+    func main() {
+        ctx := context.Background()
+        
+        // 初始化模型
+        model, err := openai.NewChatModel(ctx, &openai.ChatModelConfig{
+            APIKey:  "your-api-key", // required
+            Timeout: 30 * time.Second,
+            Model:   "gpt-4", // required
+        })
+        if err != nil {
+            panic(err)
+        }
+        
+        // 准备消息
+        messages := []*schema.Message{
+            schema.SystemMessage("你是一个助手"),
+            schema.UserMessage("介绍一下 eino"),
+        }
+        
+        // 生成回复
+        response, err := model.Generate(ctx, messages)
+        if err != nil {
+            panic(err)
+        }
+        
+        // 处理回复
+        println(response.Content)
+    }
+
+    ```
+    
+    **优势：**
+
+    扩展性强，适合需要实时数据、计算或外部资源的任务。
+    
+    可处理更复杂、更现实的业务场景。
+    
+    **缺陷：**
+
+    依赖外部工具的可用性和安全性，链路复杂。
+    
+    工具调用的选择和参数匹配需要精心设计，否则容易出错。
+    
+    **例子：**
+    
+    开源项目 OpenManus
+
+4. **Multi-agent Collaboration（多智能体协作）**
+
+    **是什么？**
+
+    多个 Agent 按照分工协作，共同完成复杂任务。每个 Agent 负责不同的子任务或角色，可以互相通信。
+
+    **最大特点：**
+
+    多个 Agent 有各自专长，分工明确。
+    
+    支持并行处理，提高效率。
+    
+    **优势：**
+
+    适合大规模、复杂或需要多领域知识的任务。
+    
+    可以灵活扩展，动态组队。
+    
+    **缺陷：**
+
+    通信和协作成本高，任务拆解和协调复杂。
+    
+    容易出现冲突或死锁，需要良好的协调机制。
+    
+    **例子：**
+    
+    一个多 Agent 团队完成市场调研：
+
+    一个 Agent 负责数据收集、一个负责分析、一个负责报告生成，三者协作输出最终结果。
+
+    开源项目AutoGen
+
+5. **Chain of Thought（思维链）**
+
+    **是什么？**
+
+    Agent 在回答问题或执行任务时，显式地逐步展示自己的推理和中间过程，而不是直接给出最终答案。
+
+    **最大特点：**
+
+    强调中间推理，每一步都清晰可见。
+    
+    源于大语言模型的“思维链”提示设计。
+    
+    **优势：**
+
+    可解释性强，便于发现和纠正错误。
+    
+    对于多步骤逻辑推理类任务表现更好。
+    
+    **缺陷：**
+
+    输出内容冗长，可能影响效率。
+    
+    纯粹思维链无法主动行动或调用外部工具。
+
+    **例子:**
+
+    chain of thought paper:
+
+    https://arxiv.org/abs/2201.11903
+
+6. **Self-Reflective/Iterative Agent（自我反思/迭代型智能体）**
+
+    **是什么？**
+
+    Agent 输出初稿后主动自查，发现问题后自动修改，反复优化，直到达标。适合主观性强、对质量要求高的场景。
+
+    **最大特点：**
+
+    具备自我评估和纠错能力，反复迭代。
+
+    **优势：**
+
+    输出质量高，能持续提升。
+    
+    减少人工 Review 负担。
+
+    **缺陷：**
+
+    计算资源消耗大，响应慢。
+    
+    设计不当易陷入无效循环。
+
+    **例子：**
+
+    MetaGPT、AutoGen 都有自反思机制
+
+## 目前主流的Agent 工作流平台、框架
+
+- Eino
+
+    Eino 是一个开源的多智能体（Multi-Agent）工作流编排平台，强调多 Agent 协作、可视化和灵活的任务拆解。它支持 Agent 间的消息通信、任务分配、流程管理，并且能够与外部工具集成。
+
+    - 多 Agent 协作与通信
+
+    - 强调“流程可视化”和“任务追踪”
+
+    - 可与第三方 LLM、API、数据库、插件等集成
+
+    - 支持自定义 Agent 能力和行为
+
+- Coze
+
+    Coze（字节跳动推出）是面向企业和开发者的 Agent 开发与托管平台，主打低代码/可视化构建、API 接入和多渠道部署（如微信、钉钉、网页等）。
+
+    - 拖拽式可视化流程编辑器
+
+    - 丰富的插件市场，支持多种工具/API
+
+    - 强大的多渠道集成（企业微信、钉钉、网页、移动端等）
+
+    - SaaS 托管服务，易于部署和运维
+
+- Dify
+
+    Dify 是一个开源的 LLM 应用开发平台，支持工作流编排、插件集成、数据管理、可视化和一站式部署，适合快速构建和上线 AI Agent 应用。
+
+    - 可视化工作流设计与管理
+
+    - 内置“对话流”“Agent 流程编排”
+
+    - 插件和工具市场
+
+    - 数据中台支持，适合企业数据流转
+
+    - 多模型支持（OpenAI、Qwen、GLM、Azure 等）
+
+- LangChain
+
+    LangChain 是当前最流行的开源 LLM 应用开发框架，支持链式推理、Agent 编排、多工具集成。它为构建复杂 LLM 应用（如多步推理、插件调用、工具链衔接）提供了强大的抽象能力。
+
+- LangGraph
+
+    LangGraph 是 LangChain 推出的“流程图式” LLM 工作流编排框架，基于有向图（DAG/Graph）将 Agent、工具及流程节点进行灵活连接，适合复杂、多分支的 Agent 应用开发。
+
+    - 基于图的流程编排（Graph-based Workflow）
+
+    - 支持分支、循环、条件判断等复杂流程
+
+    - 与 LangChain 深度集成
+
+    - 易于可视化和扩展
+
+总结来说：
+
+Eino：偏向于需要“多 Agent 协作”、“可视化流程”且自托管的团队。
+
+Coze：适合企业级、低代码、希望快速上线多渠道 Agent 的用户。
+
+Dify：适合需要一站式开发、管理、上线 LLM Agent 的团队，对数据流和插件有较高需求。
+
+LangChain：适合技术开发者，需要高度定制和灵活的 LLM 工作流。
+
+LangGraph：适合需要复杂分支/循环/流程可视化的 Agent 工作流，且与LangChain 配合更佳。
+
+## FunctionCalling 与MCP有什么联系？
+
+MCP（Model Context Protocol） 是由 OpenAI 等公司提出的一种用于 LLM（大语言模型）与外部世界（如工具、API、函数、数据库等）交互的“标准协议”或“上下文管理协议”。
+其核心目的是：
+
+- 让模型与外部函数、插件、Agent、用户输入等多种上下文信息进行结构化/标准化的交互。
+
+- 支持对话历史、工具调用、函数输出、用户反馈等上下文的高效管理和传递。
+
+- 为多步推理、多工具协作、复杂 Agent 工作流提供统一的“上下文协议”。
+
+![alt text](images/image-1.png)
+
+在 MCP 协议下，模型调用工具的格式一般是结构化的 JSON 对象（通常嵌套在消息流中），典型格式如下：
+
+``` json
+
+{
+  "role": "assistant",
+  "content": null,
+  "tool_calls": [
+    {
+      "id": "call_abc123",
+      "type": "function",
+      "function": {
+        "name": "get_weather",
+        "arguments": "{\"city\": \"北京\", \"date\": \"明天\"}"
+      }
+    }
+  ]
+}
+
+```
+解释：
+
+`role: assistant`：这条消息由模型生成。
+
+`tool_calls`：这是一个数组，表示模型需要调用的工具/函数们。
+
+`type: function`：表明是函数调用（还有可能是插件、API等）。
+
+`function.name`：要调用的函数/工具名字（如 get_weather）。
+
+`function.arguments`：参数，通常为 JSON 字符串，模型自动填充。
+
+平台接收到指令，执行工具后将结果作为tool_results插入对话上下文
+
+```json
+
+{
+  "role": "tool",
+  "tool_call_id": "call_abc123",
+  "name": "get_weather",
+  "content": "{\"weather\": \"晴，30°C\"}"
+}
+
+```
