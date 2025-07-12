@@ -13,6 +13,7 @@
 - [AI 模型连接](#page-9)
 - [部署指南](#page-10)
 - [插件与扩展机制](#page-11)
+- [补充内容](#page-12)
 
 <a id='page-1'></a>
 
@@ -2049,3 +2050,254 @@ Sources: [app/tool/browser_use_tool.py:cleanup]()
 
 ---
 
+<a id='page-12'></a>
+
+## 补充内容
+
+### Manus工作流程总结
+
+#### 1. 程序启动与初始化阶段
+
+1. 程序入口 (main.py)
+
+```python
+async def main():
+    agent = await Manus.create()  # 创建Manus智能体实例
+    prompt = input("Enter your prompt: ")  # 获取用户输入
+    await agent.run(prompt)  # 开始处理请求
+```
+
+2. manus智能体初始化 (manus.py)
+
+```python
+@classmethod
+async def create(cls, **kwargs) -> "Manus":
+    instance = cls(**kwargs)
+    await instance.initialize_mcp_servers()  # 初始化MCP服务器
+    instance._initialized = True
+    return instance
+```
+
+包括核心工具集合初始化
+
+```python
+available_tools: ToolCollection = Field(
+    default_factory=lambda: ToolCollection(
+        PythonExecute(),        # Python代码执行
+        BrowserUseTool(),       # 浏览器自动化
+        StrReplaceEditor(),     # 文件编辑
+        AskHuman(),             # 人工交互
+        Terminate(),            # 终止工具
+    )
+)
+```
+
+#### 2. 主执行循环
+
+ReAct循环：
+
+```python
+async def run(self, request: Optional[str] = None) -> str:
+    """
+    异步执行智能体的主循环。
+
+    Args:
+        request: 可选的用户初始请求，如果有则作为输入添加到记忆中。
+
+    Returns:
+        执行过程的摘要信息，以字符串形式返回。
+
+    Raises:
+        RuntimeError: 如果智能体当前不在 IDLE 状态，则抛出异常，防止重复启动。
+    """
+
+    # 检查当前状态是否为 IDLE，如果不是则抛出异常，防止并发运行
+    if self.state != AgentState.IDLE:
+        raise RuntimeError(f"Cannot run agent from state: {self.state}")
+
+    # 如果有传入用户请求（request），将其记录到记忆中（角色为 user）
+    if request:
+        self.update_memory("user", request)
+
+    results: List[str] = []  # 用于保存每一步执行的结果
+
+    # 使用 async with 上下文管理器将状态切换为 RUNNING，并在退出时自动恢复状态
+    async with self.state_context(AgentState.RUNNING):
+
+        # 进入 ReAct 循环：直到达到最大步数或任务完成（FINISHED）
+        while (
+            self.current_step < self.max_steps and self.state != AgentState.FINISHED
+        ):
+
+            self.current_step += 1  # 步数加一
+            logger.info(f"Executing step {self.current_step}/{self.max_steps}")  # 日志记录当前步数
+
+            # 执行单个步骤（Think + Act）
+            step_result = await self.step()
+
+            # 检查是否陷入死循环或卡住状态
+            if self.is_stuck():
+                self.handle_stuck_state()  # 处理卡顿状态，可能重启、调整策略等
+
+            # 将当前步骤结果保存
+            results.append(f"Step {self.current_step}: {step_result}")
+
+        # 判断是否达到了最大步数限制，如果是则强制终止
+        if self.current_step >= self.max_steps:
+            self.current_step = 0  # 重置步数计数器
+            self.state = AgentState.IDLE  # 设置状态为 IDLE
+            results.append(f"Terminated: Reached max steps ({self.max_steps})")  # 添加终止原因说明
+
+    # 清理沙箱资源（如临时文件、容器等）
+    await SANDBOX_CLIENT.cleanup()
+
+    # 返回所有步骤的结果拼接成的字符串，如果没有执行任何步骤则返回提示信息
+    return "\n".join(results) if results else "No steps executed"
+```
+
+- 状态检查
+
+    防止在非空闲状态下重复运行智能体。
+
+- 记忆更新
+
+    若有初始请求，先写入记忆系统，供后续使用。
+
+- 异步上下文
+    
+    安全地切换状态并在退出后自动恢复，避免状态混乱。
+
+- ReAct 主循环
+    
+    控制最大步数与提前终止机制。
+- step() 执行
+
+    每一步调用 await self.step()，执行 Think-Act-Observ 的完整流程。
+
+- 防卡检测	
+    
+    通过 is_stuck() 和 handle_stuck_state() 避免死循环。
+
+- 清理资源
+    
+    结束后释放沙箱环境资源。
+
+#### 3. 决策阶段(Think)
+
+作用：让智能体基于当前上下文使用 LLM 决策下一步行为（输出文字或调用工具），并根据工具调用策略进行合法性判断和状态更新。
+
+1. 前置处理
+
+    如果有 next_step_prompt，作为用户消息加入对话历史。
+
+2. 调用 LLM
+
+    使用当前对话历史、系统提示、可用工具等信息，调用语言模型。
+    
+    模型可选择：输出文本 或 调用一个/多个工具。
+
+3. 异常处理
+
+    若因 Token 超限失败 → 记录错误并终止流程。
+    
+    其他错误也记录到记忆中。
+
+4.  响应解析
+    
+    提取模型返回的：
+    
+    - 文本内容（`content`）
+    
+    - 工具调用列表（`tool_calls`）
+
+5. 根据模式决策
+
+    根据 `tool_choices` 设置不同策略决定是否允许工具调用：
+
+    - NONE
+
+        不允许调用工具，只接受文本回复
+
+    - REQUIRED
+
+        必须调用工具，否则视为失败
+
+    - AUTO
+
+        自动判断：有内容或调用工具都算成功
+
+6. 状态更新与返回
+
+    将思考结果写入记忆（如助手消息或工具调用）。
+
+    返回布尔值表示“思考”是否成功（是否有有效输出）。
+
+#### 4. 工具执行阶段(Act)
+
+作用：执行上一步 think() 中决定的工具调用，并将结果记录到记忆中。
+
+1. 如果没有要执行的工具（`tool_calls` 为空）：
+
+- 若当前模式是 `ToolChoice.REQUIRED` → 抛出异常（必须调用工具）
+- 否则返回最后一条消息的内容或提示“无内容可执行”
+
+2. 有工具调用，逐个执行工具调用
+
+- 遍历所有 `tool_calls`，依次调用：
+- 每次调用前清空 `_current_base64_image`（用于图像上下文）
+- 调用 `execute_tool(command)` 执行工具
+- 如果设置了 `max_observe`，截取结果长度
+- 记录日志和工具响应消息到记忆中
+
+3. 结果汇总返回
+
+- 将所有工具执行的结果拼接后返回
+
+#### 7. 任务终止与结果反馈
+
+达到最大步数或者主动调用`terminate`工具终止
+
+```python
+_TERMINATE_DESCRIPTION = """Terminate the interaction when the request is met OR if the assistant cannot proceed further with the task.
+When you have finished all the tasks, call this tool to end the work."""
+
+
+class Terminate(BaseTool):
+    name: str = "terminate"
+    description: str = _TERMINATE_DESCRIPTION
+    parameters: dict = {
+        "type": "object",
+        "properties": {
+            "status": {
+                "type": "string",
+                "description": "The finish status of the interaction.",
+                "enum": ["success", "failure"],
+            }
+        },
+        "required": ["status"],
+    }
+
+    async def execute(self, status: str) -> str:
+        """Finish the current execution"""
+        return f"The interaction has been completed with status: {status}"
+```
+
+总体流程如下：
+
+```mermaid
+graph TD
+    A[用户输入Prompt] --> B[创建Manus智能体]
+    B --> C[初始化工具集合]
+    C --> D[进入ReAct循环]
+    D --> E[Think: LLM选择工具]
+    E --> F[Act: 执行工具]
+    F --> G[Observe: 观察结果]
+    G --> H{任务完成?}
+    H -->|否| I{达到最大步数?}
+    I -->|否| E
+    I -->|是| J[强制终止]
+    H -->|是| K[调用Terminate工具]
+    K --> L[清理资源]
+    J --> L
+    L --> M[向用户反馈结果]
+```
