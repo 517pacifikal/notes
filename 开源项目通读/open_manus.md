@@ -2301,3 +2301,153 @@ graph TD
     J --> L
     L --> M[向用户反馈结果]
 ```
+
+### Tool调用流程
+
+1. LLM生成工具调用信息（`function call`）
+
+当用户输入如 "open bilibili with chrome"，LLM会根据系统提示词和工具参数，生成如下 function call（tool call）信息：
+
+```json
+{
+  "tool_calls": [
+    {
+      "function": {
+        "name": "browser_use",
+        "arguments": "{\"action\": \"go_to_url\", \"url\": \"https://www.bilibili.com/\"}"
+      }
+    }
+  ]
+}
+```
+
+1. `think` 阶段解析并保存 `tool_calls`
+2. act 阶段遍历 `tool_calls`，调用 `execute_tool`
+
+```python
+sync def act(self) -> str:
+    results = []
+    for command in self.tool_calls:
+        result = await self.execute_tool(command)
+        results.append(result)
+    return "\n\n".join(results)
+```
+
+3. `execute_tool` 查找工具、解析参数、调用工具 `execute`
+4. `BrowserUseTool.execute` 执行具体浏览器操作
+5. 返回结果，记录历史，决定下一步
+
+### 记忆管理(Memory)
+
+每个Agent（如Manus、ToolCallAgent、ReActAgent）都有一个memory属性，类型为Memory（见base.py）。
+
+在每一步（如`run`、`think`、`act`）都会更新记忆，将新消息加入`self.memory.messages`。
+
+记忆用于：
+- 构建LLM请求的上下文（历史消息）
+- 检测重复回复（防止Agent卡死）
+- 记录工具调用结果，辅助多轮推理
+
+以下是相关的代码定义：
+
+`Memory`对象用于存储所有对话消息，包括用户输入、系统提示、助手回复、工具调用结果等。
+
+```python
+class Memory(BaseModel):
+    messages: List[Message] = Field(default_factory=list)
+    max_messages: int = Field(default=100)
+
+    def add_message(self, message: Message) -> None:
+        """Add a message to memory"""
+        self.messages.append(message)
+        # Optional: Implement message limit
+        if len(self.messages) > self.max_messages:
+            self.messages = self.messages[-self.max_messages :]
+
+    def add_messages(self, messages: List[Message]) -> None:
+        """Add multiple messages to memory"""
+        self.messages.extend(messages)
+        # Optional: Implement message limit
+        if len(self.messages) > self.max_messages:
+            self.messages = self.messages[-self.max_messages :]
+
+    def clear(self) -> None:
+        """Clear all messages"""
+        self.messages.clear()
+
+    def get_recent_messages(self, n: int) -> List[Message]:
+        """Get n most recent messages"""
+        return self.messages[-n:]
+
+    def to_dict_list(self) -> List[dict]:
+        """Convert messages to list of dicts"""
+        return [msg.to_dict() for msg in self.messages]
+```
+
+`Memory` 对象包含多个Message
+
+```python
+class Message(BaseModel):
+    """Represents a chat message in the conversation"""
+
+    role: ROLE_TYPE = Field(...)  # type: ignore
+    content: Optional[str] = Field(default=None)
+    tool_calls: Optional[List[ToolCall]] = Field(default=None)
+    name: Optional[str] = Field(default=None)
+    tool_call_id: Optional[str] = Field(default=None)
+    base64_image: Optional[str] = Field(default=None)
+```
+
+### 状态管理(State)
+
+- 每个Agent有`state`属性，类型为`AgentState`（如`IDLE`、`RUNNING`、`FINISHED`、`ERROR`）。
+
+- 初始状态为`IDLE`，执行时切换为`RUNNING`，任务完成后切换为`FINISHE`D或`IDLE`。
+
+状态结构体定义：
+
+```python
+class AgentState(str, Enum):
+    """Agent execution states"""
+
+    IDLE = "IDLE"
+    RUNNING = "RUNNING"
+    FINISHED = "FINISHED"
+    ERROR = "ERROR"
+```
+
+- 通过`state_context`上下文管理器安全切换状态
+
+```python
+@asynccontextmanager
+    async def state_context(self, new_state: AgentState):
+        """Context manager for safe agent state transitions.
+
+        Args:
+            new_state: The state to transition to during the context.
+
+        Yields:
+            None: Allows execution within the new state.
+
+        Raises:
+            ValueError: If the new_state is invalid.
+        """
+        if not isinstance(new_state, AgentState):
+            raise ValueError(f"Invalid state: {new_state}")
+
+        previous_state = self.state
+        self.state = new_state
+        try:
+            yield
+        except Exception as e:
+            self.state = AgentState.ERROR  # Transition to ERROR on failure
+            raise e
+        finally:
+            self.state = previous_state  # Revert to previous state
+```
+
+- 执行流程中的状态变化：
+
+- `run()`方法检查并设置状态，主循环根据状态决定是否继续执行。
+
+- 工具如`terminate`被调用时，Agent会切换到`FINISHED`状态，终止主循环。
