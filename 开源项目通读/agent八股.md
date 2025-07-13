@@ -392,6 +392,8 @@ MCP（Model Context Protocol） 是由 OpenAI 等公司提出的一种用于 LLM
 
 ```
 
+相当于所有的`Function Calling`的实际 API都在远程的MCP Server上，而我本地只需要实现MCP Client就能通过请求MCP Server来实现对这些tool的调用，而不需要本地再实现这些tool调用方式了。
+
 # Workflow 的 Structure是什么？
 
 ## 结构的核心要素
